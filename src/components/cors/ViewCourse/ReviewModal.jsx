@@ -75,7 +75,7 @@ const ReviewModal = ({ reviewModal, setReviewModal }) => {
                 className='text-xl bg-richblack-700 w-full py-3 px-4 rounded-lg focus:outline-none shadow-sm shadow-richblack-300'
               ></textarea>
               {
-                errors.reviewField && <span className='text-richblack-5 w-max'>Please Add your Experience</span>
+                errors.reviewField && <span className="text-xs text-pink-200">Please Add your Experience</span>
               }
             </div>
             <div className='flex self-end gap-3'>

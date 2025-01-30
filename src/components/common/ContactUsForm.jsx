@@ -64,7 +64,7 @@ const ContactUsForm = () => {
               placeholder="First Name"
               {...register("firstName", { required: true })}
             />
-            {errors.firstName && <span>Please enter your first name</span>}
+            {errors.firstName && <span className="text-xs text-pink-200">Please enter your first name</span>}
           </div>
 
           {/* last name */}
@@ -92,7 +92,7 @@ const ContactUsForm = () => {
             placeholder="Enter your Email"
             {...register("email", { required: true })}
           />
-          {errors.email && <span>Please Enter you email Address</span>}
+          {errors.email && <span className="text-xs text-pink-200">Please Enter you email Address</span>}
         </div>
 
         {/* phone */}

@@ -209,7 +209,7 @@ const CourseInformationForm = () => {
               placeholder="Course Title"
               {...register("courseName", { required: true })}
             />
-            {errors.courseName && <span>Course Title is Required</span>}
+            {errors.courseName && <span className="text-xs text-pink-200">Course Title is Required</span>}
           </div>
 
           {/* // course description */}
@@ -227,7 +227,7 @@ const CourseInformationForm = () => {
               className="text-xl bg-richblack-800 py-3 px-4 rounded-lg focus:outline-none shadow-sm shadow-richblack-300"
             ></textarea>
             {errors.courseDescription && (
-              <span>Course Description is Required</span>
+              <span className="text-xs text-pink-200">Course Description is Required</span>
             )}
           </div>
 
@@ -252,7 +252,7 @@ const CourseInformationForm = () => {
                 })}
               />
             </div>
-            {errors.coursePrice && <span>Course Price is Required</span>}
+            {errors.coursePrice && <span className="text-xs text-pink-200">Course Price is Required</span>}
           </div>
 
           {/* // course Category */}
@@ -277,7 +277,7 @@ const CourseInformationForm = () => {
                   </option>
                 ))}
             </select>
-            {errors.category && <span>Course Category is required</span>}
+            {errors.category && <span className="text-xs text-pink-200">Course Category is required</span>}
           </div>
 
           {/* // course Tags */}
@@ -319,7 +319,7 @@ const CourseInformationForm = () => {
               className="text-xl bg-richblack-800 py-3 px-4 rounded-lg focus:outline-none shadow-sm shadow-richblack-300"
             ></textarea>
             {errors.courseBenifits && (
-              <span>Course courseBenifits are Required</span>
+              <span className="text-xs text-pink-200">Course courseBenifits are Required</span>
             )}
           </div>
 

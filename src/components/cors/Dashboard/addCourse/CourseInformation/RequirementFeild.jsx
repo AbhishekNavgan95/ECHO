@@ -77,7 +77,7 @@ const RequirementFeild = ({
           </div>
         </ul>
       )}
-      {errors[name] && <span>{label} is required</span>}
+      {errors[name] && <span className="text-xs text-pink-200">{label} is required</span>}
     </>
   );
 };

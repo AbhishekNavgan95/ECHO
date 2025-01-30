@@ -178,7 +178,7 @@ const SubSectionModal = ({
                 className="text-xl bg-richblack-800 w-full py-3 px-4 rounded-lg focus:outline-none shadow-sm shadow-richblack-300"
                 {...register("lectureTitle", { required: true })}
               />
-              {errors.lectureTitle && <span>Lecture Title is required</span>}
+              {errors.lectureTitle && <span className="text-xs text-pink-200">Lecture Title is required</span>}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -191,7 +191,7 @@ const SubSectionModal = ({
                 className="text-xl bg-richblack-800 w-full py-3 px-4 rounded-lg focus:outline-none shadow-sm shadow-richblack-300"
                 {...register("timeDuration", { required: true })}
               />
-              {errors.timeDuration && <span>Lecture Duration is required</span>}
+              {errors.timeDuration && <span className="text-xs text-pink-200">Lecture Duration is required</span>}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -206,7 +206,7 @@ const SubSectionModal = ({
                 {...register("lectureDescription", { required: true })}
               ></textarea>
               {errors.lectureDescription && (
-                <span>Lecture Description is required</span>
+                <span className="text-xs text-pink-200">Lecture Description is required</span>
               )}
 
             </div>

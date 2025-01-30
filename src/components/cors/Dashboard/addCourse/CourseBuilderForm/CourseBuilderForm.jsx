@@ -118,7 +118,7 @@ const CourseBuilderForm = () => {
               placeholder="Add Section Name"
               {...register("sectionName", { required: true })}
             />
-            {errors.sectionName && <span>Section Name`` is required</span>}
+            {errors.sectionName && <span className="text-xs text-pink-200">Section Name is required</span>}
           </div>
           <div className="flex gap-3">
             <ActionButton
