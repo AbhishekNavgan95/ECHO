@@ -30,6 +30,7 @@ export default function ProfileDropdown() {
     >
       <div className="flex items-center gap-x-1">
         <img
+          loading="lazy"
           src={user?.image}
           alt={`profile-${user?.firstName}`}
           className="aspect-square w-[30px] rounded-full object-cover"
@@ -41,7 +42,7 @@ export default function ProfileDropdown() {
           e.stopPropagation();
           dispatch(setProgress(100))
         }}
-        className={`absolute left-[50%] top-[150%] translate-x-[-50%] z-[11] overflow-hidden rounded-md border border-richblack-600 bg-richblack-800 transition-all duration-100 ${!open? "invisible opacity-0" : "visible opacity-100" }`}
+        className={`absolute left-[50%] top-[150%] translate-x-[-50%] z-[11] overflow-hidden rounded-md border border-richblack-600 bg-richblack-800 transition-all duration-100 ${!open ? "invisible opacity-0" : "visible opacity-100"}`}
         ref={ref}
       >
         <Link to="/dashboard/my-profile" onClick={() => setOpen(false)}>

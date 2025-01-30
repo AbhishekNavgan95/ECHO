@@ -100,8 +100,9 @@ const Settings = () => {
             <div className="flex flex-col lg:flex-row gap-5 items-center justify-between w-full">
               <div className="flex flex-col lg:flex-row items-center gap-5">
                 <img
+                  loading="lazy"
                   src={file}
-                  alt=""
+                  alt="image"
                   className=" border-2 border-richblack-100 w-[100px] aspect-square rounded-full object-cover"
                 />
                 <h5 className="md:text-xl font-semibold">
@@ -116,8 +117,8 @@ const Settings = () => {
                     className="text-center flex items-center px-4 py-2 rounded-md md:text-lg bg-richblack-600 hover:bg-richblack-700 focus:hover:bg-richblack-700 text-richblack-25 active:scale-95 focus:scale-95 transition-all duration-200 shadow-sm shadow-richblack-300 gap-3"
                   >
                     <span className="flex items-center gap-3">
-                    <FaFileContract />
-                    Select File
+                      <FaFileContract />
+                      Select File
                     </span>
                   </ActionLabel>
                   <input
@@ -255,7 +256,7 @@ const Settings = () => {
                 <div className="flex rounded-lg shadow-sm focus:outline-none shadow-richblack-300 md:text-lg text-richblack-100 bg-richblack-700">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
-                    required                    
+                    required
                     autoComplete=""
                     name="newPassword"
                     value={password.newPassword}

@@ -21,7 +21,7 @@ const CoursePurchaseCard = ({ handleAddToCart, setConfirmationModal, handleBuyCo
   return (
     <div className='bg-richblack-800 rounded-lg border border-richblack-600 text-richblack-5 overflow-hidden flex flex-col group p-3 max-w-[400px]'>
       <div className='overflow-hidden rounded-lg lg:aspect-video flex items-center' >
-        <img  className='w-full group-hover:scale-105 transition-scale duration-300 ' src={courseData?.thumbnail} alt="" />
+        <img  loading="lazy"  className='w-full group-hover:scale-105 transition-scale duration-300 ' src={courseData?.thumbnail} alt="thumbnail" />
       </div>
       <div className=' flex flex-col my-3 gap-2'>
         <div className='flex items-center justify-between px-4'>

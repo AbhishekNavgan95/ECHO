@@ -43,11 +43,14 @@ const Tamplate = ({ formType }) => {
               <img
                 className="object-cover border-2 shadow-2xl border-white relative z-[2] w-full"
                 src={!(formType === "login")? signup : login}
-                alt=""
+                loading="lazy" 
+                alt="login"
               />
               <img
                 src={frame}
                 className="w-full h-full bg-white z-[1] absolute top-2 left-2"
+                loading="lazy" 
+                alt="frame"
               />
               <div className="w-full h-full bg-richblack-500 top-0 z-[1] blur-3xl absolute"></div>
             </div>

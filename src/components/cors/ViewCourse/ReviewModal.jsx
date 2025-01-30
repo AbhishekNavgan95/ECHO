@@ -49,7 +49,7 @@ const ReviewModal = ({ reviewModal, setReviewModal }) => {
         {/* modal body */}
         <div>
           <div className='flex items-center justify-center flex-col gap-3 pt-3'>
-            <img src={user?.image} className='rounded-full w-[100px] aspect-square border border-richblack-600 object-cover' alt="" />
+            <img src={user?.image}  loading="lazy" className='rounded-full w-[100px] aspect-square border border-richblack-600 object-cover' alt="image" />
             <div className='text-xl flex items-center flex-col gap-1'>
               <p>{user?.firstName} {user?.lastName}</p>
               <p className='text-lg text-richblack-300'>Posting Publically</p>

@@ -30,7 +30,7 @@ const CartCourses = () => {
           className="w-full flex flex-col cursor-pointer lg:flex-row gap-y-3 items-start lg:items-center justify-between border border-richblack-600 hover:bg-richblack-800 transition-all duration-300 rounded-lg p-3"
         >
           <div className="w-full flex flex-col md:flex-row gap-5 items-stretch md:items-center">
-            <img className="w-full aspect-video md:w-[250px] rounded-lg object-cover" src={course?.thumbnail} alt="" />
+            <img className="w-full aspect-video md:w-[250px] rounded-lg object-cover" src={course?.thumbnail} loading="lazy" alt="thumbnail" />
             <div className="flex items-start flex-col gap-2">
               <h3 className="text-xl text-start font-semibold line-clamp-1">{course?.courseTitle}</h3>
               <p className="py-1 border text-yellow-100 border-yellow-100 text-sm font-semibold w-max px-3 rounded-lg ">{course?.category?.name}</p>

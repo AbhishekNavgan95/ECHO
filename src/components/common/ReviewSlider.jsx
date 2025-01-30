@@ -62,7 +62,7 @@ const ReviewSlider = ({reviewArray}) => {
                             reviews?.map(review => <SwiperSlide key={review?._id} className=''>
                                 <div className='p-5 border select-none border-richblack-600 bg-richblack-800 divide-y divide-richblack-600 rounded-lg flex flex-col gap-3 h-full'>
                                     <div className='flex items-center gap-5 pb-3'>
-                                        <img src={review?.user?.image} className='max-w-[70px] border border-richblack-600 object-cover rounded-full aspect-square' alt="" />
+                                        <img  loading="lazy"  src={review?.user?.image} className='max-w-[70px] border border-richblack-600 object-cover rounded-full aspect-square' alt="user" />
                                         <div className='space-y-1'>
                                             <p className=''>{review?.user?.firstName + " " + review?.user?.lastName}</p>
                                             <p className='line-clamp-1 text-richblack-300'>{review?.course?.courseTitle}</p>

@@ -35,8 +35,9 @@ const Upload = ({ name, label, register, errors, setValue, video }) => {
       {image ? (
         <div className="flex flex-col">
           <img
+            loading="lazy"
             src={image}
-            alt=""
+            alt="image"
             className="h-full w-full rounded-lg object-cover"
           />
           <button
@@ -67,7 +68,7 @@ const Upload = ({ name, label, register, errors, setValue, video }) => {
                   id={name}
                   name={name}
                   type="file"
-                  accept={video? ".mp4" : "image/*,.jpeg,.jpg,.png"}
+                  accept={video ? ".mp4" : "image/*,.jpeg,.jpg,.png"}
                   tabIndex="-1"
                   multiple=""
                   {...register(name, { required: true })}

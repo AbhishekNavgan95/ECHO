@@ -92,7 +92,7 @@ const Navbar = () => {
             {/* logo */}
 
             <Link to={"/"} onClick={() => dispatch(setProgress(100))} className="">
-              <img className="max-w-[5rem]" src={logo} alt="" />
+              <img className="max-w-[5rem]"  loading="lazy"  src={logo} alt="logo" />
             </Link>
 
             {/* nav links*/}

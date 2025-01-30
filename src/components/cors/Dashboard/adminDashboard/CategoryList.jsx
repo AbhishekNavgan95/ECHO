@@ -48,7 +48,7 @@ const CategoryList = ({ categoryData }) => {
                   <Link key={course?._id} to={`/courses/${course?._id}`}>
                     <div className='justify-start group bg-richblack-800 border border-richblack-600 p-3 rounded-lg flex flex-col md:flex-row gap-3'>
                       <div className='overflow-hidden w-full rounded-lg md:max-w-[300px] border border-richblack-600'>
-                        <img src={course?.thumbnail} className='aspect-video w-full object-cover group-hover:scale-105 transition-all duration-300' alt="" />
+                        <img loading="lazy" src={course?.thumbnail} className='aspect-video w-full object-cover group-hover:scale-105 transition-all duration-300' alt="thumbnail" />
                       </div>
                       <div className='flex flex-col md:items-start items-center gap-1'>
                         <p className='text-xl md:text-start text-center'>{course?.courseTitle}</p>

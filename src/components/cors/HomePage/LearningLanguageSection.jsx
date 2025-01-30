@@ -14,9 +14,9 @@ const LearningLanguageSection = () => {
             <p className='text-center text-richblack-300 w-full lg:w-2/3 mx-auto text-xl mt-3 font-semibold'>Using spin making learning multiple language easy. with 20+ languages realistic voice-over, Progress tracking, custom schedule and more...</p>
         </div>
         <div className='flex flex-col md:flex-row justify-center items-center my-10 relative'>
-            <img src={Know_your_progress}  className='-mb-36 md:mb-0 md:-mr-32 relative hover:lg:z-[4] hover:lg:scale-105 transition-all duration-300 w-[300px] md:w-full'  alt="" />
-            <img src={Compare_with_others}  alt="" className=' relative hover:lg:z-[4] hover:lg:scale-105 transition-all duration-300 w-[300px] md:w-full' />
-            <img src={Plan_your_lessons} className='-mt-36 md:mt-0 md:-ml-32 relative hover:lg:z-[4] hover:lg:scale-105 transition-all duration-300 w-[300px] md:w-full' alt="" />
+            <img  loading="lazy" src={Know_your_progress}  className='-mb-36 md:mb-0 md:-mr-32 relative hover:lg:z-[4] hover:lg:scale-105 transition-all duration-300 w-[300px] md:w-full'  alt="Know_your_progress" />
+            <img  loading="lazy" src={Compare_with_others}  alt="Compare_with_others" className=' relative hover:lg:z-[4] hover:lg:scale-105 transition-all duration-300 w-[300px] md:w-full' />
+            <img  loading="lazy" src={Plan_your_lessons} className='-mt-36 md:mt-0 md:-ml-32 relative hover:lg:z-[4] hover:lg:scale-105 transition-all duration-300 w-[300px] md:w-full' alt="Plan_your_lessons" />
         </div>
         <div className='flex justify-center'>
             <CtaButton active="true" linkTo={"/signup"}>

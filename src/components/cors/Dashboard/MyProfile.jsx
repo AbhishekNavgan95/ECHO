@@ -17,7 +17,8 @@ const MyProfile = () => {
           <div className="flex flex-col md:flex-row gap-5 items-center"> 
             <img
               src={user.image}
-              alt=""
+              loading="lazy"
+              alt="user"
               className=" border-2 border-richblack-100 w-[100px] aspect-square rounded-full object-cover"
             />
             <div className="flex flex-col items-center xl:items-start gap-2">

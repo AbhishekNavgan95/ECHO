@@ -51,7 +51,7 @@ const EnrolledCourses = () => {
                     className="flex cursor-pointer border-richblack-600 transition-all duration-300 justify-between flex-col items-start gap-1 p-3 border group bg-richblack-800 rounded-lg shadow-xs shadow-richblack-300">
                     <div className="flex flex-col gap-3 items-start w-full">
                       <div className="overflow-hidden">
-                        <img src={course.thumbnail} className="min-w-full aspect-video object-cover rounded-sm group-hover:scale-105 transition-scale duration-300" alt="" />
+                        <img src={course.thumbnail} className="min-w-full aspect-video object-cover rounded-sm group-hover:scale-105 transition-scale duration-300" loading="lazy" alt="thumbnail" />
                       </div>
                       <div className="flex flex-col justify-center gap-1">
                         <h3 className="text-xl line-clamp-2">{course.courseTitle}</h3>

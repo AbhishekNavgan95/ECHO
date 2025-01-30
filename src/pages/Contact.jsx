@@ -20,7 +20,7 @@ const Contact = () => {
                   )
                 }
               </div>
-              <img className="w-full border-2 aspect-video object-cover object-bottom border-richblack-600" src={contactUs} alt="" />
+              <img className="w-full border-2 aspect-video object-cover object-bottom border-richblack-600" src={contactUs}  loading="lazy"  alt="contact us" />
             </div>
             <div className="max-w-maxContent mx-auto w-11/12 md:w-10/12 lg:w-10/12 xl:w-6/12 p-5 lg:p-10 border border-richblack-600">
               <div className="flex flex-col gap-3">

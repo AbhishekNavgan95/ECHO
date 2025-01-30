@@ -82,7 +82,7 @@ const InstructorDashboard = () => {
                                 courses.length > 0 ? courses.sort((a, b) => b?.studentsEnrolled?.length - a.studentsEnrolled?.length).slice(0, 3).map(course =>
                                     <div key={course._id} className='w-full flex flex-col group gap-1 text-lg border border-richblack-600 p-3 rounded-lg bg-richblack-900 shadow-sm shadow-richblack-600'>
                                         <div className='w-full rounded-sm overflow-hidden '>
-                                            <img src={course?.thumbnail} className='aspect-video w-full group-hover:scale-105 transition-all duration-300' alt="" />
+                                            <img src={course?.thumbnail} className='aspect-video w-full group-hover:scale-105 transition-all duration-300'  loading="lazy"  alt="thumbnail" />
                                         </div>
                                         <p className='line-clamp-1'>{course?.courseTitle}</p>
                                         <span className='flex gap-3'>

@@ -32,9 +32,9 @@ const About = () => {
               </div>
               <div className="w-full h-[70px]"></div>
               <div className="grid items-center justify-items-stretch grid-cols-3 gap-5 absolute bottom-0 translate-y-[50%]">
-                <img src={aboutus1} className="w-full" alt="" />
-                <img src={aboutus2} className="w-full" alt="" />
-                <img src={aboutus3} className="w-full" alt="" />
+                <img loading="lazy" src={aboutus1} className="w-full" alt="about us image" />
+                <img loading="lazy" src={aboutus2} className="w-full" alt="about us image" />
+                <img loading="lazy" src={aboutus3} className="w-full" alt="about us image" />
               </div>
             </div>
           </section>
@@ -79,8 +79,9 @@ const About = () => {
               <div className="w-full h-full absolute bottom-[0] left-[50%] translate-x-[-50%] blur-3xl z-[3] bg-richblack-500"></div>
               <img
                 src={FoundingStory}
+                loading="lazy" 
                 className="w-full relative z-[5]"
-                alt=""
+                alt="FoundingStory"
               />
             </div>
           </div>

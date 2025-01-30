@@ -16,7 +16,7 @@ const CourseCard = ({ course, height, }) => {
     <Link to={`../courses/${course?._id}`} >
       <div className='flex flex-col gap-3 overflow-hidden group py-2'>
         <div className='overflow-hidden rounded-lg relative '>
-          <img className={`aspect-video w-full h-full object-cover group-hover:scale-105 transition-all duration-300 ${height}`} src={course?.thumbnail} alt="" />
+          <img className={`aspect-video w-full h-full object-cover group-hover:scale-105 transition-all duration-300 ${height}`} src={course?.thumbnail} alt="thumbnail" loading="lazy"  />
         </div>
         <div className='flex flex-col items-center lg:items-start gap-1'>
           <h4 className='text-xl line-clamp-1 font-semibold'>{course?.courseTitle}</h4>
