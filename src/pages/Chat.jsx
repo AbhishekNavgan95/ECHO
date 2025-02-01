@@ -19,44 +19,38 @@ const Chat = () => {
 
     return (
         <div className="mx-auto text-richblack-25">
-            <div className="flex px-2 md:px-0">
+            <div className="flex px-3 md:px-0">
                 <RoomList currentChatRoom={currentChatRoom} setCurrentChatRoom={setCurrentChatRoom} />
-                <ChatView socket={socket} currentChatRoom={currentChatRoom} setCurrentChatRoom={setCurrentChatRoom}  />
+                <ChatView socket={socket} currentChatRoom={currentChatRoom} setCurrentChatRoom={setCurrentChatRoom} />
+                <ChatRules />
             </div>
         </div>
     );
 };
 
-export default Chat;
-
-{/* <h1 className="text-2xl font-bold my-4">💬 Chat Room: {roomId}</h1>
-
-            <div className="bg-gray-800 w-full max-w-xl min-h-[60vh] p-4 rounded-lg overflow-y-auto">
-                {loading ? (
-                    <p>⏳ Loading messages...</p>
-                ) : messages.length === 0 ? (
-                    <p>No messages yet. Start the conversation!</p>
-                ) : (
-                    messages.map((msg, index) => (
-                        <p key={index} className="text-sm">
-                            <strong>{msg.sender}:</strong> {msg.content}
-                        </p>
-                    ))
-                )}
+const ChatRules = () => {
+    return (
+        <div className="bg-richblack-800 min-h-full hidden xl:flex right-0 border-l border-richblack-600 lg:static flex-col items-start gap-2 min-w-[300px] px-5 py-5">
+            <h1 className="text-2xl font-semibold">Chat Rules</h1>
+            <div className="flex flex-col gap-2">
+                <p>No Spamming or flooding the chat</p>
+                <p>Be respectful to all members</p>
+                <p>Use appropriate language - no profanity</p>
+                <p>No hate speech or discriminatory comments</p>
+                <p>Don't share personal information</p>
+                <p>No advertising or self-promotion</p>
+                <p>Stay on topic in discussions</p>
+                <p>No impersonating other users</p>
+                <p>No sharing of illegal content</p>
+                <p>No political discussions</p>
+                <p>Use appropriate usernames</p>
+                <p>Report any violations to moderators</p>
+                <p>No sharing of NSFW content</p>
+                <p>Keep conversations family-friendly</p>
+                <p>No harassment or bullying</p>
             </div>
+        </div>
+    )
+}
 
-            <div className="mt-4 flex gap-2">
-                <input
-                    type="text"
-                    value={newMessage}
-                    className="py-2 px-3 border border-gray-400 rounded-lg w-64 text-richblack-800"
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type a message..."
-                />
-                <button
-                    className="bg-yellow-400 text-black px-4 py-2 rounded-lg"
-                    onClick={sendMessage}
-                >
-                    Send
-                </button>
-            </div> */}
+export default Chat;

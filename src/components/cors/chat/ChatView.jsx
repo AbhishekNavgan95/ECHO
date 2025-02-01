@@ -21,7 +21,7 @@ const ChatView = ({ socket, currentChatRoom, setCurrentChatRoom }) => {
 
             try {
                 const response = await axios.get(`${VITE_BASE_URL}/chat/messages/${currentChatRoom?._id}`)
-                console.log("response : ", response)
+                // console.log("response : ", response)
                 setMessages(response.data.reverse());
             } catch (e) {
                 console.log("Error fetching chat history ", e)
@@ -75,7 +75,13 @@ const ChatView = ({ socket, currentChatRoom, setCurrentChatRoom }) => {
 
     if (!currentChatRoom) {
         return (
-            <div className='col-span-2 bg-richblack-800 w-full'></div>
+            <div className='col-span-2 bg-richblack-800 w-full min-h-[90vh] flex items-center justify-center flex-col'>
+                <h1 className='text-2xl font-semibold'>Select a chat to start messaging</h1>
+                <span className={`${user?.accountType !== 'admin'? "hidden" : ""} flex flex-col items-center gap-2`}>
+                    <p>or</p>
+                    <button onClick={() => console.log("create a new chat room")} className='bg-yellow-100 text-richblack-900 rounded-lg px-4 py-2'>Create a new chat</button>
+                </span>
+            </div>
         )
     }
 
