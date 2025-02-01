@@ -89,7 +89,7 @@ const ChatView = ({ socket, currentChatRoom, setCurrentChatRoom }) => {
     return (
         <div ref={containerRef} className='col-span-2 bg-diagonal-stripes w-full h-[90vh]  overflow-y-auto'>
             <div className="w-full mx-auto flex-grow flex flex-col items-start relative ">
-                <div className='max-w-[1000px] min-h-[90vh] w-full mx-auto flex flex-col items-start px-4 py-2 gap-y-2'>
+                <div className='max-w-[1000px] min-h-[90vh] w-full mx-auto flex flex-col items-start px-2 md:px-4 py-2 gap-y-2'>
                     {messages.map((msg, index) => (
                         <Message user={user} key={index} message={msg} />
                     ))}
@@ -123,14 +123,14 @@ const Message = ({ message, user }) => {
     const time = new Date(message?.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     return (
-        <div className={`flex items-start gap-3 ${user?._id === message?.sender?._id ? "self-end flex-row-reverse" : ""}`}>
+        <div className={`flex items-start gap-2 md:gap-3 ${user?._id === message?.sender?._id ? "self-end flex-row-reverse" : ""}`}>
             <span>
                 <img src={message?.sender?.image} className='w-6 h-6 rounded-full border border-richblack-200' alt="user" />
             </span>
             <div className='bg-richblack-50 min-w-[150px] px-2 py-1 rounded-lg text-richblack-900'>
-                <p className='text-xs font-light'>{message?.sender?.firstName + " " + message?.sender?.lastName}</p>
-                <p className='text-base mb-1 font-semibold'>{message.content}</p>
-                <p className='text-xs text-end text-richblack-700'>{time}</p>
+                <p className='text-[10px] md:text-xs font-light'>{message?.sender?.firstName + " " + message?.sender?.lastName}</p>
+                <p className='text-sm md:text-base mb-1 font-semibold'>{message.content}</p>
+                <p className='text-[10px] md:text-xs text-end text-richblack-700'>{time}</p>
             </div>
         </div>
     )
