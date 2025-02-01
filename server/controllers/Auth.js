@@ -32,7 +32,6 @@ exports.sendOTP = async (req, res) => {
       lowerCaseAlphabets: false,
       specialChars: false,
     });
-    console.log("Otp gemerated");
 
     // check for unique otp
     let result = await Otp.findOne({ otp: otp });
@@ -43,7 +42,7 @@ exports.sendOTP = async (req, res) => {
         lowerCaseAlphabets: false,
         specialChars: false,
       });
-      const result = await Otp.findOne({ otp: otp });
+      result = await Otp.findOne({ otp: otp });
     }
 
     const otpPayload = {
@@ -53,7 +52,6 @@ exports.sendOTP = async (req, res) => {
 
     // create a entry in db for OTP
     const otpBody = await Otp.create(otpPayload);
-    console.log("otpBody : ", otpBody);
 
     // return response successfull
     res.status(200).json({
@@ -124,10 +122,9 @@ exports.signUp = async (req, res) => {
     const recentOtp = await Otp.findOne({ email })
       .sort({ createdAt: -1 })
       .limit(1);
-    // console.log("recent Otp : ", recentOtp);
 
     // validate OTP
-    if (recentOtp.length === 0) {
+    if (recentOtp?.length === 0) {
       // otp not found
       return res.status(400).json({
         success: false,

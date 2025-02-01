@@ -89,7 +89,7 @@ const ChatView = ({ socket, currentChatRoom, setCurrentChatRoom }) => {
     return (
         <div ref={containerRef} className='col-span-2 bg-diagonal-stripes w-full h-[90vh]  overflow-y-auto'>
             <div className="w-full mx-auto flex-grow flex flex-col items-start relative ">
-                <div className='max-w-[1000px] min-h-[90vh] w-full mx-auto flex flex-col items-start px-2 md:px-4 py-2 gap-y-2'>
+                <div className='max-w-[1000px] min-h-[90vh] w-full mx-auto flex flex-col justify-end items-start px-2 md:px-4 py-2 gap-y-2'>
                     {messages.map((msg, index) => (
                         <Message user={user} key={index} message={msg} />
                     ))}
