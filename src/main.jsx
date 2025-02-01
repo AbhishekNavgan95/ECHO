@@ -16,10 +16,10 @@ const store = configureStore({
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <BrowserRouter>
-      <SmoothScroll>
+      {/* <SmoothScroll> */}
         <App />
         <Toaster />
-      </SmoothScroll>
+      {/* </SmoothScroll> */}
     </BrowserRouter>
   </Provider>
 );

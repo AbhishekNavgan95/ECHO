@@ -5,6 +5,7 @@
 html,
 body {
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 .move-circle {
@@ -23,4 +24,12 @@ body {
 select {
   background:transparent;
   -webkit-appearance: none;
+}
+
+.bg-diagonal-stripes {
+  background: repeating-linear-gradient(
+    45deg,
+    #161d29,
+    #999daa29 150px
+  );
 }

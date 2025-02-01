@@ -12,6 +12,7 @@ import LogIn from "./pages/LogIn";
 import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
 import VerifyEmail from "./pages/VerifyEmail";
+import Chat from "./pages/Chat";
 import Error from "./pages/Error";
 
 // Authentication routes
@@ -40,7 +41,6 @@ import { ACCOUNT_TYPE } from "./utils/constants";
 import AdminDashboard from "./components/cors/Dashboard/AdminDashboard";
 import AddCategory from "./components/cors/Dashboard/AddCategory";
 import { setProgress } from "./slices/loadingBarSlice";
-import { useEffect } from "react";
 
 function App() {
   const user = useSelector((state) => state.profile.user);
@@ -60,12 +60,13 @@ function App() {
         !location?.pathname?.includes("view-course") &&
         <Navbar />
       }
-      <ScrollToTop />
+      {/* <ScrollToTop /> */}
 
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
+        <Route path="chat" element={<Chat />} />
         <Route path="catalog/:category" element={<Catalog />} />
         <Route path="courses/:courseId" element={<CourseDetails />} />
         <Route
