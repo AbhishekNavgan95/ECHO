@@ -60,6 +60,7 @@ const ChatView = ({ socket, currentChatRoom, setCurrentChatRoom }) => {
         if (!user) {
             navigate("/login")
             toast.error('please login...')
+            return;
         }
 
         if (newMessage.trim() === "") return;

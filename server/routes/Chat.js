@@ -16,7 +16,7 @@ router.get("/rooms", async (req, res) => {
 });
 
 // Create a new chat room
-router.post("/rooms", async (req, res) => {
+router.post("/rooms", auth, isAdmin, async (req, res) => {
   try {
     const { name, icon } = req.body;
     const newRoom = new ChatRoom({ name, icon });
