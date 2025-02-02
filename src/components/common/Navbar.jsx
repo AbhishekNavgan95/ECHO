@@ -20,6 +20,7 @@ import { FaSearch } from "react-icons/fa";
 import { GoDash } from "react-icons/go";
 import DangerButton from "../common/DangerButton"
 import ScrollLock from "../../hooks/ScrollLock";
+import { setCategory } from "../../slices/categorySlice";
 
 
 const Navbar = () => {
@@ -42,7 +43,8 @@ const Navbar = () => {
   const fetchSublinks = async () => {
     try {
       const result = await apiConnector("GET", categories.CATEGORIES_API);
-      setSubLinks(result?.data?.data); ``
+      setSubLinks(result?.data?.data);
+      dispatch(setCategory(result?.data?.data))
     } catch (e) {
       console.log("could not fetch categories : ", e);
     }
@@ -98,31 +100,7 @@ const Navbar = () => {
             {/* nav links*/}
             <div className="md:flex font-semibold text-lg items-center justify-center gap-5 hidden">
               {NavbarLinks.map((link, index) => {
-                return link.title === "Catalog" ? (
-                  <button
-                    className={`text-richblack-25 group hover:cursor-pointer relative flex items-center gap-2 ${location?.pathname?.includes("catalog") ? "text-yellow-100" : "text-richblack-5"}`}
-                    key={index}
-                  >
-                    <p>{link.title}</p>
-                    <MdOutlineKeyboardArrowDown />
-                    <div
-                      className="bg-richblack-5 text-richblack-900 absolute min-w-[250px] rounded-lg p-1 top-[120%] left-[100%] z-[5] translate-x-[-70%] translate-y-[15px] transition-all delay-100 duration-100 group-hover:visible group-hover:opacity-100 group-hover:translate-y-[0px] flex flex-col items-center opacity-0 invisible"
-                    >
-                      {
-                        subLinks?.length <= 0
-                          ? <div className="py-2">No categories found</div>
-                          : subLinks.map((category, index) => (
-                            <NavLink
-                              to={`/catalog/${category.name}`}
-                              className={`relative z-[5] rounded-lg transition-all duration-200 hover:bg-richblack-100 overflow-hidden px-5 py-3 w-full text-center ${location?.pathname?.includes(category.name.replaceAll(" ", "%20")) ? "bg-richblack-100 " : ""}`}
-                              key={index}
-                            >
-                              <p className={`text-nowrap `}>{category.name}</p>
-                            </NavLink>
-                          ))}
-                    </div>
-                  </button>
-                ) : (
+                return (
                   <NavLink
                     onClick={() => dispatch(setProgress(100))}
                     className={({ isActive }) =>

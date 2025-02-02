@@ -33,7 +33,6 @@ import MyCourses from "./components/cors/Dashboard/MyCourses";
 import EditCourse from "./components/cors/Dashboard/editCourse/EditCourse";
 import Catalog from "./pages/Catalog";
 import CourseDetails from "./pages/CourseDetails";
-import ScrollToTop from "./components/common/ScrollToTop";
 import ViewCourse from "./pages/ViewCourse";
 import VideoDetails from "./components/cors/ViewCourse/VideoDetails";
 import InstructorDashboard from "./components/cors/Dashboard/InstructorDashboard";
@@ -41,6 +40,7 @@ import { ACCOUNT_TYPE } from "./utils/constants";
 import AdminDashboard from "./components/cors/Dashboard/AdminDashboard";
 import AddCategory from "./components/cors/Dashboard/AddCategory";
 import { setProgress } from "./slices/loadingBarSlice";
+import PlayGround from "./pages/PlayGround";
 
 function App() {
   const user = useSelector((state) => state.profile.user);
@@ -67,7 +67,9 @@ function App() {
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
         <Route path="chat" element={<Chat />} />
-        <Route path="catalog/:category" element={<Catalog />} />
+        <Route path="playground" element={<PlayGround />} />
+        <Route path="catalog" element={<Catalog />} />
+        <Route path="catalog/:courseId" element={<CourseDetails />} />
         <Route path="courses/:courseId" element={<CourseDetails />} />
         <Route
           path="signup"

@@ -22,15 +22,13 @@ export const getCatalogPageData = async (categoryId, dispatch) => {
     if (!response?.data?.success) {
       throw new Error("Could not fetch category page");
     }
+
     dispatch(setProgress(60))
     console.log("CATALOG PAGE API RESPONSE : ", response);
-    result = response?.data?.data;
-
+    result = response?.data?.data || [];
   } catch (e) {
-
     console.log("CATALOG PAGE API ERROR : ", e);
-    result = e?.response?.data;
-    
+    result = e?.response?.data?.data || [];
   }
   dispatch(setProgress(100))
   // toast.dismiss(toastId);
