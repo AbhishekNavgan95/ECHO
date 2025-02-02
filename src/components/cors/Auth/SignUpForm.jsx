@@ -92,7 +92,7 @@ const SignupForm = ({
             onClick={() => setAccountType("Student")}
             className={
 
-              `px-5 py-2  rounded-full relative z-[2] transition-color duration-300 text-richblack-5 ${accountType === "Student" ? "text-richblack-900" : null}`
+              `px-5 py-2  cursor-pointer rounded-full relative z-[2] transition-color duration-300 text-richblack-5 ${accountType === "Student" ? "text-richblack-900" : null}`
             }
           >
             Student
@@ -100,7 +100,7 @@ const SignupForm = ({
           <div
             onClick={() => setAccountType("Instructor")}
             className={
-              `px-5 py-2 rounded-full relative z-[2] transition-color duration-300 text-richblack-5 ${accountType === "Instructor" ? "text-richblack-900" : null}`
+              `px-5 py-2 cursor-pointer rounded-full relative z-[2] transition-color duration-300 text-richblack-5 ${accountType === "Instructor" ? "text-richblack-900" : null}`
             }
           >
             Intructor

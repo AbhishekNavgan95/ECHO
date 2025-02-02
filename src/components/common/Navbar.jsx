@@ -109,7 +109,7 @@ const Navbar = () => {
                     key={index}
                     to={link?.path}
                   >
-                    <p className="text-base">{link.title}</p>
+                    <p className="text-sm lg:text-base">{link.title}</p>
                   </NavLink>
                 );
               })}

@@ -1,14 +1,25 @@
-import axios from 'axios';
+import io from "socket.io-client";
+import axios from "axios";
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { IoSendSharp } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import toast from "react-hot-toast";
+import RoomList from './RoomList';
 
 const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
+const SERVER_URL = import.meta.env.VITE_SERVER_URI
 
-const ChatView = ({ socket, currentChatRoom, setCurrentChatRoom }) => {
+const socket = io(SERVER_URL, {
+    withCredentials: true,
+    transports: ["websocket"],
+    autoConnect: true,
+});
+
+
+const ChatView = () => {
     const { user } = useSelector((state) => state.profile);
+    const [currentChatRoom, setCurrentChatRoom] = useState(null)
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const navigate = useNavigate();
@@ -16,7 +27,6 @@ const ChatView = ({ socket, currentChatRoom, setCurrentChatRoom }) => {
 
     useEffect(() => {
         const fetchChathistory = async () => {
-
             if (!currentChatRoom) return
 
             try {
@@ -74,48 +84,41 @@ const ChatView = ({ socket, currentChatRoom, setCurrentChatRoom }) => {
         setNewMessage("");
     };
 
-    if (!currentChatRoom) {
-        return (
-            <div className='col-span-2 bg-richblack-800 w-full min-h-[90vh] flex items-center justify-center flex-col'>
-                <h1 className='text-2xl font-semibold'>Select a chat to start messaging</h1>
-                <span className={`${user?.accountType !== 'admin'? "hidden" : ""} flex flex-col items-center gap-2`}>
-                    <p>or</p>
-                    <button onClick={() => console.log("create a new chat room")} className='bg-yellow-100 text-richblack-900 rounded-lg px-4 py-2'>Create a new chat</button>
-                </span>
-            </div>
-        )
-    }
-
     return (
-        <div ref={containerRef} className='col-span-2 bg-diagonal-stripes w-full h-[90vh]  overflow-y-auto'>
-            <div className="w-full mx-auto flex-grow flex flex-col items-start relative ">
-                <div className='max-w-[1000px] min-h-[90vh] w-full mx-auto flex flex-col justify-end items-start px-2 md:px-4 py-2 gap-y-2'>
-                    {messages.map((msg, index) => (
-                        <Message user={user} key={index} message={msg} />
-                    ))}
-                </div>
-                <div className="sticky left-0 bottom-0 w-full flex">
-                    <input
-                        type="text"
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                sendMessage();
-                            }
-                        }}
-                        value={newMessage}
-                        className="py-2 px-3 w-full outline-none shadow-sm border-none text-richblack-25 bg-richblack-700 "
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Type a message..."
-                    />
-                    <button
-                        className="bg-yellow-100 text-richblack-900 px-4 py-2"
-                        onClick={sendMessage}
-                    >
-                        <IoSendSharp />
-                    </button>
+        <section className='flex'>
+            <RoomList currentChatRoom={currentChatRoom} setCurrentChatRoom={setCurrentChatRoom} />
+
+
+            <div ref={containerRef} className='col-span-2 bg-diagonal-stripes w-full h-[90vh] overflow-y-auto'>
+                <div className="w-full mx-auto flex-grow flex flex-col items-start relative ">
+                    <div className='max-w-[1000px] min-h-[90vh] w-full mx-auto flex flex-col justify-end items-start px-2 md:px-4 py-2 gap-y-2'>
+                        {messages.map((msg, index) => (
+                            <Message user={user} key={index} message={msg} />
+                        ))}
+                    </div>
+                    <div className="sticky left-0 bottom-0 w-full flex">
+                        <input
+                            type="text"
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    sendMessage();
+                                }
+                            }}
+                            value={newMessage}
+                            className="py-2 px-3 w-full outline-none shadow-sm border-none text-richblack-25 bg-richblack-700 "
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            placeholder="Type a message..."
+                        />
+                        <button
+                            className="bg-yellow-100 text-richblack-900 px-4 py-2"
+                            onClick={sendMessage}
+                        >
+                            <IoSendSharp />
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
     )
 }
 

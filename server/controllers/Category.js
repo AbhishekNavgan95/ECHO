@@ -55,7 +55,7 @@ exports.showAllCategories = async (req, res) => {
     // get all tags
     const allCategories = await Category.find(
       {},
-      { name: true, description: true }
+      { name: true, description: true, courses: true }
     );
 
     // res

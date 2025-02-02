@@ -41,6 +41,8 @@ import AdminDashboard from "./components/cors/Dashboard/AdminDashboard";
 import AddCategory from "./components/cors/Dashboard/AddCategory";
 import { setProgress } from "./slices/loadingBarSlice";
 import PlayGround from "./pages/PlayGround";
+import RoomList from "./components/cors/chat/RoomList";
+import ChatView from "./components/cors/chat/ChatView";
 
 function App() {
   const user = useSelector((state) => state.profile.user);
@@ -67,6 +69,7 @@ function App() {
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
         <Route path="chat" element={<Chat />} />
+        <Route path='chat/channels' element={<ChatView />} />
         <Route path="playground" element={<PlayGround />} />
         <Route path="catalog" element={<Catalog />} />
         <Route path="catalog/:courseId" element={<CourseDetails />} />

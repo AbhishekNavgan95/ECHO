@@ -81,17 +81,18 @@ const Catalog = () => {
                 <div className='flex items-start gap-x-10 gap-y-5'>
                     <div className='hidden items-start lg:flex py-3 px-3 pr-10 flex-col gap-3 border-r border-richblack-700'>
                         {
-                            categories?.length > 0? categories.map((category, index) => {
+                            categories?.length > 0 ? categories.map((category, index) => {
                                 return (
-                                    <button onClick={() => setCurrentCategory(category)} key={index} className={`${category?._id === currentCategory?._id ? "border-l-4 border-yellow-200 text-yellow-200 w-max pl-3" : ""} text-sm transition-all text-start hover:text-yellow-200 duration-100 text-nowrap`}>
+                                    <button onClick={() => setCurrentCategory(category)} key={index} className={`${category?._id === currentCategory?._id ? "border-l-4 border-yellow-200 text-yellow-200 pl-3" : ""} text-sm transition-all text-start hover:text-yellow-200 duration-100 text-nowrap flex justify-between items-center gap-x-5 w-full`}>
                                         {
                                             category?.name
                                         }
+                                        <p className={`${category?._id === currentCategory?._id ?"text-yellow-200" : "text-richblack-300"}`}>{category?.courses?.length}</p>
                                     </button>
                                 )
                             }) : (
                                 <div className='text-nowrap min-h-[200px] flex items-center justify-center'>
-                                    😕 No categories found... 
+                                    😕 No categories found...
                                 </div>
                             )
                         }

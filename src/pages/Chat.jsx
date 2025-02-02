@@ -1,56 +1,117 @@
 import React, { useEffect, useReducer, useState } from "react";
-import io from "socket.io-client";
-import axios from "axios";
 import { useSelector } from "react-redux";
-import RoomList from "../components/cors/chat/RoomList";
-import HighlightText from "../components/common/HighlightText";
-import ChatView from "../components/cors/chat/ChatView";
+import HighlightText from '../components/common/HighlightText';
+import CtaButton from '../components/common/CtaButton';
+import { VscDash } from "react-icons/vsc";
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URI
-
-const socket = io(SERVER_URL, {
-    withCredentials: true,
-    transports: ["websocket"],
-    autoConnect: true,
-});
+const rules = [
+    {
+        "id": 1,
+        "rule": "No Spamming",
+        "description": "Avoid flooding the chat with repeated messages or unnecessary content."
+    },
+    {
+        "id": 3,
+        "rule": "Use Appropriate Language",
+        "description": "No profanity or offensive language."
+    },
+    {
+        "id": 4,
+        "rule": "No Hate Speech",
+        "description": "Discriminatory or hateful comments are not allowed."
+    },
+    {
+        "id": 5,
+        "rule": "Protect Personal Information",
+        "description": "Do not share your or others' private details."
+    },
+    {
+        "id": 6,
+        "rule": "No Advertising or Self-Promotion",
+        "description": "Promotional content and links are not allowed."
+    },
+    {
+        "id": 7,
+        "rule": "Stay on Topic",
+        "description": "Ensure discussions remain relevant to the channel."
+    },
+    {
+        "id": 8,
+        "rule": "No Impersonation",
+        "description": "Do not pretend to be another user."
+    },
+    {
+        "id": 9,
+        "rule": "No Sharing Illegal Content",
+        "description": "Posting pirated or illegal material is strictly prohibited."
+    },
+    {
+        "id": 10,
+        "rule": "Avoid Political Discussions",
+        "description": "Political debates are not allowed."
+    },
+    {
+        "id": 11,
+        "rule": "Use Appropriate Usernames",
+        "description": "Offensive or misleading usernames are not allowed."
+    },
+    {
+        "id": 12,
+        "rule": "Report Violations",
+        "description": "Help maintain a safe space by reporting any rule-breaking behavior."
+    },
+    {
+        "id": 13,
+        "rule": "No NSFW Content",
+        "description": "Explicit or inappropriate content is not permitted."
+    },
+    {
+        "id": 14,
+        "rule": "Family-Friendly Conversations",
+        "description": "Ensure discussions are suitable for all audiences."
+    },
+    {
+        "id": 15,
+        "rule": "No Harassment or Bullying",
+        "description": "Any form of harassment or intimidation is not tolerated."
+    }
+]
 
 const Chat = () => {
-    const [currentChatRoom, setCurrentChatRoom] = useState(null)
 
     return (
-        <div className="mx-auto text-richblack-25">
-            <div className="flex px-3 md:px-0">
-                <RoomList currentChatRoom={currentChatRoom} setCurrentChatRoom={setCurrentChatRoom} />
-                <ChatView socket={socket} currentChatRoom={currentChatRoom} setCurrentChatRoom={setCurrentChatRoom} />
-                <ChatRules />
+        <div className="min-h-screen bg-richblack-900 text-richblack-5 w-full">
+            <div className="relative px-3 max-w-maxContent mx-auto mt-20">
+                <div className='flex flex-col gap-5 items-center'>
+                    <div className='text-2xl md:text-4xl text-center'>
+                        <h1 className='mb-2'>Explore Conversations that Matter </h1>
+                        <HighlightText text="Real-Time, All the Time!" />
+                    </div>
+                    <p className='md:w-[60%] text-richblack-200 text-center'>Join interactive forums tailored to your passions, collaborate with like-minded individuals, and dive into real-time conversations on the topics you care about.</p>
+                    <CtaButton active={true} linkTo={'/chat/channels'}>Explore Channels</CtaButton>
+                </div>
+
+                <div className='mt-10'>
+                    <h5 className='text-2xl font-semibold'>
+                        Community Guidelines
+                    </h5>
+                    <div className='grid sm:grid-cols-2 mt-5 gap-2'>
+                        {
+                            rules.map((r) => (
+                                <div className='py-2 px-5 rounded-lg bg-richblack-800 flex items-start gap-3'>
+                                    < VscDash className='mt-1 font-bold' />
+                                    <span>
+                                        <h5 className='font-semibold'> {r?.rule}</h5>
+                                        <p className='text-richblack-200 mt-1 text-sm'>{r.description}</p>
+                                    </span>
+                                </div>
+                            ))
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     );
 };
-
-const ChatRules = () => {
-    return (
-        <div className="bg-richblack-800 min-h-full hidden xl:flex right-0 border-l border-richblack-600 lg:static flex-col items-start gap-2 min-w-[300px] px-5 py-5">
-            <h1 className="text-2xl font-semibold">Chat Rules</h1>
-            <div className="flex flex-col gap-2">
-                <p>No Spamming or flooding the chat</p>
-                <p>Be respectful to all members</p>
-                <p>Use appropriate language - no profanity</p>
-                <p>No hate speech or discriminatory comments</p>
-                <p>Don't share personal information</p>
-                <p>No advertising or self-promotion</p>
-                <p>Stay on topic in discussions</p>
-                <p>No impersonating other users</p>
-                <p>No sharing of illegal content</p>
-                <p>No political discussions</p>
-                <p>Use appropriate usernames</p>
-                <p>Report any violations to moderators</p>
-                <p>No sharing of NSFW content</p>
-                <p>Keep conversations family-friendly</p>
-                <p>No harassment or bullying</p>
-            </div>
-        </div>
-    )
-}
 
 export default Chat;
