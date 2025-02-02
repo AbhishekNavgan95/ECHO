@@ -19,6 +19,7 @@ import Accordian from '../components/cors/courseDetails/Accordian';
 import { buyCourse } from '../services/operations/StudentFeaturesAPI'
 import { SyncLoader } from 'react-spinners'
 import ReviewSlider from "../components/common/ReviewSlider"
+import { IoMdArrowBack } from "react-icons/io";
 
 const CourseDetails = () => {
 
@@ -122,8 +123,9 @@ const CourseDetails = () => {
                         <div className='w-full bg-richblack-800 py-5 xl:py-10'>
                             <section className="py-5 md:py-14 px-3 relative  max-w-maxContent mx-auto">
                                 <div className='flex flex-col'>
-                                    <div className='flex flex-col items-center lg:items-start gap-y-5 relative text-xl'>
+                                    <div className='flex flex-col items-center lg:items-start gap-y-5 relative text-xl '>
                                         <div className='flex flex-col items-center lg:items-start gap-2 lg:w-7/12'>
+                                            <button className='flex  items-center gap-x-1 hover:gap-x-2 transition-all duration-300 text-sm mb-2 hover:text-yellow-200' onClick={() => navigate(-1)}><IoMdArrowBack /> Back to explore</button>
                                             <p className='text-3xl xl:text-4xl mb-1 line-clamp-2 text-center md:text-start'>{courseData?.courseTitle}</p>
                                             <p className=' text-richblack-300 text-lg text-center lg:text-start line-clamp-4'>{courseData?.courseDescription} </p>
                                             <div className='flex gap-2 justify-center lg:justify-start flex-wrap my-3'>
@@ -142,18 +144,18 @@ const CourseDetails = () => {
                                                 <span>{`${courseData?.studentsEnrolled?.length} Students`}</span>
                                             </div>
 
-                                            <p className='text-center'>
+                                            <p className='text-center text-base'>
                                                 {
                                                     ` Created by : ${courseData?.instructor?.firstName} ${courseData?.instructor?.lastName}`
                                                 }
                                             </p>
                                             <div className='flex gap-y-2 flex-col items-center lg:items-start '>
-                                                <span className='flex items-center gap-1 text-2xl'><IoMdInformationCircleOutline /> <span className='text-xl text-center'>{`Created at : ${formatDate(courseData?.createdAt)}`}</span></span>
-                                                <span className='flex items-center gap-1 text-2xl'><MdOutlineLanguage /> <span className='text-xl'> English </span></span>
+                                                <span className='flex items-center gap-1 text-center text-base'><IoMdInformationCircleOutline /> <span className='text-center'>{`Created at : ${formatDate(courseData?.createdAt)}`}</span></span>
+                                                <span className='flex items-center gap-1 text-center text-base'><MdOutlineLanguage /> <span className=''> English </span></span>
                                             </div>
                                         </div>
 
-                                        <div className='lg:absolute z-[3] right-0'>
+                                        <div className='lg:absolute top-5 z-[3] right-0'>
                                             <CoursePurchaseCard
                                                 handleAddToCart={handleAddToCart}
                                                 handleBuyCourse={handleBuyCourse}
@@ -162,6 +164,7 @@ const CourseDetails = () => {
                                                 handleShare={handleShare}
                                             />
                                         </div>
+
                                     </div>
                                 </div>
                             </section>
@@ -169,7 +172,7 @@ const CourseDetails = () => {
 
                         <div className='w-full py-5'>
                             <section className="bg-richblack-900 py-5 md:py-14 px-3 relative text-richblack-5 max-w-maxContent mx-auto">
-                                <div className='flex flex-col gap-y-5'>
+                                <div className='flex flex-col gap-y-5 '>
                                     <div className='lg:w-7/12 border border-richblack-600'>
                                         <WhatYouWillLearn benifit={courseData?.whatYouWillLearn} />
                                     </div>
@@ -199,7 +202,7 @@ const CourseDetails = () => {
                                     <div className='md:w-8/12 mx-auto'>
                                         <div className='my-5 flex flex-col items-center gap-5'>
                                             <span className='flex items-center flex-col gap-5'>
-                                                <img className='w-[200px] aspect-square rounded-full object-cover border border-richblack-600' src={courseData?.instructor?.image}  loading="lazy"  alt="instructor" />
+                                                <img className='w-[200px] aspect-square rounded-full object-cover border border-richblack-600' src={courseData?.instructor?.image} loading="lazy" alt="instructor" />
                                                 <div className='flex items-center md:items-center flex-col '>
                                                     <p className='text-xl'>{`${courseData?.instructor.firstName} ${courseData?.instructor.lastName}`}</p>
                                                     <p className='text-richblack-300'>{courseData?.instructor?.email}</p>
@@ -213,7 +216,7 @@ const CourseDetails = () => {
                         </div>
                         <div className='w-full pb-5 bg-richblack-900 text-richblack-5'>
                             <section className=" py-5 px-3 relative text-richblack-5 max-w-maxContent mx-auto flex flex-col gap-5">
-                            <h4 className='text-3xl xl:text-4xl'>Reviews</h4>
+                                <h4 className='text-3xl xl:text-4xl'>Reviews</h4>
                                 <ReviewSlider reviewArray={courseData?.ratingAndReviews} />
                             </section>
                         </div>
