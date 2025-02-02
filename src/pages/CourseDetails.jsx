@@ -30,7 +30,6 @@ const CourseDetails = () => {
     const { user } = useSelector(state => state.profile)
 
     const { courseId } = useParams();
-    // console.log(courseId);
     const [courseData, setCourseData] = useState(null);
     const [avgReviewCount, setAvgReviewCount] = useState(0)
     const [totalNumberOflectures, setTotalNumberOfLectures] = useState(0);
@@ -69,7 +68,6 @@ const CourseDetails = () => {
             setTags(courseData?.tag.split(","));
 
             setTotalNumberOfLectures(lectures);
-            // console.log("total lectures in this course : ", totalNumberOflectures)
         }
     }, [courseData])
 

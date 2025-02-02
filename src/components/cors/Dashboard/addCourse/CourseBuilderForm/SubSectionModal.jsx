@@ -32,7 +32,6 @@ const SubSectionModal = ({
   const { course } = useSelector((state) => state.course);
 
   useEffect(() => {
-    // console.log("modal data: ", modalData);
     if (view || edit) {
       setValue("lectureTitle", modalData.title);
       setValue("lectureDescription", modalData.description);
@@ -127,7 +126,6 @@ const SubSectionModal = ({
     if (result) {
       // update course
       const updatedCourseContent = course?.courseContent?.map(section => {
-        console.log(modalData.sectionId);
         return section._id === modalData.sectionId ? result : section
       }
       )

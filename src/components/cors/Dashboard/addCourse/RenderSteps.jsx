@@ -6,7 +6,6 @@ import PublishCourse from "./PublishCourse/PublishCourse";
 
 const RenderSteps = () => {
   const step = useSelector((state) => state.course.step);
-  // console.log("step : ", step);
 
   const steps = [
     {

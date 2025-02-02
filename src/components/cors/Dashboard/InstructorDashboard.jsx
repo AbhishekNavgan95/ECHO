@@ -22,9 +22,6 @@ const InstructorDashboard = () => {
         const instructorApiData = await getInstructorData(token, dispatch);
         const result = await fetchInstructorCourses(token, dispatch);
 
-        console.log("Instructor data : ", instructorApiData);
-        console.log("instructor courses : ", result);
-
         if (instructorApiData) {
             setInstructorData(instructorApiData);
         }

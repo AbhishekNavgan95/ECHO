@@ -23,7 +23,6 @@ async function sendVarificationEmail(email, otp) {
     try {
         const tamplate = otpTemplate(otp);
         const mailResponse = await mailSender(email, "OTP Verification Email" ,tamplate);
-        console.log("Email sent successfully : ", mailResponse);
     }
     catch(e) {
         console.log("error occured while sending mail", e)

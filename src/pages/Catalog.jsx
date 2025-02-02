@@ -41,7 +41,6 @@ const Catalog = () => {
         const fetchCatalogPageData = async () => {
             setLoading(true)
             const response = await getCatalogPageData(currentCategory?._id, dispatch);
-            console.log("response : ", response)
             setCourses(response?.sort((a, b) => a.price - b.price));
             setLoading(false)
         }

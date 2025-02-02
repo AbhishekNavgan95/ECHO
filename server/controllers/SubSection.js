@@ -11,11 +11,6 @@ exports.createSubSection = async (req, res) => {
 
     const video = req.files.video;
 
-    // console.log(
-    //   "printing video: ",
-    //   video
-    // );
-
     // validate data
     if (!sectionId || !title || !timeDuration || !description) {
       return res.status(400).json({
@@ -86,23 +81,6 @@ exports.updateSubSection = async (req, res) => {
     const { subSectionId, sectionId, title, timeDuration, description } = req.body;
 
     const video = req.files.video;
-
-    console.log(
-      "printing data: ",
-      sectionId,
-      title,
-      timeDuration,
-      description,
-      video
-    );
-
-    // validate data
-    // if (!sectionId || !title || !timeDuration || !description) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Alll fields are required",
-    //   });
-    // }
 
     const ifsection = await Section.findById(sectionId);
     if (!ifsection) {

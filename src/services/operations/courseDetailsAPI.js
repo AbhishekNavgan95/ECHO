@@ -202,7 +202,6 @@ export const createSubSection = async (data, token) => {
 
 // update a section
 export const updateSection = async (data, token) => {
-  console.log("data to be updated : ", data);
   let result = null;
   const toastId = toast.loading("Loading...");
   try {
@@ -295,7 +294,6 @@ export const deleteSubSection = async (data, token) => {
 // fetching all courses under a specific instructor
 export const fetchInstructorCourses = async (token, dispatch) => {
   let result = [];
-  console.log("dispatch : ", dispatch);
   dispatch(setProgress(40));
   const toastId = toast.loading("Loading...");
   try {
@@ -378,7 +376,6 @@ export const getFullDetailsOfCourse = async (courseId, token, dispatch) => {
 // mark a lecture as complete
 export const markLectureAsComplete = async (data, token) => {
   let result = null;
-  console.log("mark complete data", data);
   const toastId = toast.loading("Loading...");
   try {
     const response = await apiConnector("POST", LECTURE_COMPLETION_API, data, {

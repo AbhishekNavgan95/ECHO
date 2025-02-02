@@ -200,7 +200,6 @@ exports.login = async (req, res) => {
     }
 
     const user = tempUser.toObject(); // to make object mutable
-    console.log("user : ", user);
 
     // generate jwt after password matching
     if (await bcrypt.compare(password, user.password)) {
@@ -299,8 +298,6 @@ exports.changePassword = async (req, res) => {
         "Password for your account has been updated",
         mailBody
       );
-
-      console.log("email res : ", emailResponse);
 
     } catch (error) {
 

@@ -54,7 +54,6 @@ const Settings = () => {
 
   const updateDetails = (e) => {
     const { name, value, checked, type, id } = event.target;
-    // console.log(name, value, checked, type, id);
     setFormData((prev) => ({
       ...prev,
       [name]: type === "radio" ? id : value,
@@ -81,7 +80,6 @@ const Settings = () => {
 
   const changePassword = (e) => {
     e.preventDefault();
-    // console.log(password);
     updatePassword(token, password, dispatch);
     setPassword({
       oldPassword: "",

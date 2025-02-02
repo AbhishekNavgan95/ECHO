@@ -59,11 +59,11 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  // console.log("User connected:", socket.id);
+  console.log("User connected:", socket.id);
 
   socket.on("joinGroup", (roomId) => {
     socket.join(roomId);
-    // console.log(`User ${socket.id} joined group ${roomId}`);
+    console.log(`User ${socket.id} joined group ${roomId}`);
   });
 
   socket.on("sendMessage", async (data) => {
@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    // console.log("User disconnected:", socket.id);
+    console.log("User disconnected:", socket.id);
   });
 });
 

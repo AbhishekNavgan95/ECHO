@@ -9,27 +9,15 @@ exports.updateProfile = async (req, res) => {
   try {
     // fetch data with user id
     const { dateOfBirth, about, contactNumber, gender } = req.body;
-    // console.log("Details recieved",dateOfBirth, about, contactNumber, gender);
 
-    // console.log(dateOfBirth, about, gender, contactNumber)
     const id = req.user.id;
-
-    // vailidate data
-    // if (!contactNumber || !gender) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "contact number and gender are required",
-    //   });
-    // }
 
     //  find profile
     const userDetails = await User.findById(id);
-    // console.log("userDetails : ", userDetails);
 
     const profileId = userDetails.additionalDetails;
 
     const profileDetails = await Profile.findById(profileId);
-    // console.log("profileDetails : ", profileDetails);
 
     // update profile
     profileDetails.DOB = dateOfBirth;
@@ -159,8 +147,6 @@ exports.getEnrolledCourses = async (req, res) => {
       .populate("courseProgress")
       .exec();
 
-    console.log("user details : ", userDetails);
-
     if (!userDetails) {
       return res.status(400).json({
         success: false,
@@ -190,7 +176,6 @@ exports.updateDisplayPicture = async (req, res) => {
     // find user with that id
     const user = await User.findById(id);
     const image = req.files?.thumbnail;
-    // console.log("file recieved : ", image);
 
     // validate user
     if (!user) {
@@ -220,8 +205,6 @@ exports.updateDisplayPicture = async (req, res) => {
         message: "Something went wrong while uploading the file"
       })
     }
-
-    // console.log("image uplaod details : ", uploadDetails);
 
     const userDetails = await User.findByIdAndUpdate(
       {

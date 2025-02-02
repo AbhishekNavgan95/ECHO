@@ -4,9 +4,6 @@ import ScrollLock from "../../hooks/ScrollLock";
 
 const Modal = ({ modalData }) => {
   document.body.style.overflowY = "hidden"
-  console.log( 
-    document.body.style
-  )
 
   return (
     <>

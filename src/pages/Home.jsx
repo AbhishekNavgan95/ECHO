@@ -18,7 +18,6 @@ const Home = () => {
   const { token } = useSelector((state) => state.auth);
   const user = useSelector((state) => state.profile.user);
   const navigate = useNavigate()
-  // console.log(user)
 
   return (
     <div className="w-full mx-auto">

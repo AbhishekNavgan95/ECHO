@@ -41,7 +41,6 @@ exports.updateCourseProgress = async (req, res) => {
             courseProgress.completedVideos.push(subSectionId);
         }
         const newCourseProgress = await courseProgress.save();
-        console.log("updaed course progress ", newCourseProgress);
 
         res.status(200).json({
             success: true,

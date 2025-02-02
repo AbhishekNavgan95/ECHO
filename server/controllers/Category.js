@@ -7,7 +7,6 @@ function getRandomInt(max) {
 
 // create Tag handler function
 exports.createCategory = async (req, res) => {
-  console.log("req recieved");
   try {
     // read data from req body
     const { name, description } = req.body;
@@ -34,8 +33,6 @@ exports.createCategory = async (req, res) => {
       name: name,
       description: description,
     });
-
-    console.log("category details", categoryDetails);
 
     // res
     return res.status(200).json({
@@ -95,7 +92,6 @@ exports.categoryPageDetails = async (req, res) => {
 
     // If category not found
     if (!selectedCategory) {
-      console.log("Category not found.");
       return res
         .status(404)
         .json({ success: false, message: "Category not found" });
@@ -103,7 +99,6 @@ exports.categoryPageDetails = async (req, res) => {
 
     // No courses with given category
     if (!selectedCategory.courses || selectedCategory.courses.length === 0) {
-      console.log("No courses found for the selected category.");
       return res.status(404).json({
         success: false,
         message: "No courses found for the selected category.",

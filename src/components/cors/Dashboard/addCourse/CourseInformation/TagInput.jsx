@@ -16,7 +16,6 @@ const TagInput = ({ name, label, register, errors, setValue, placeholder }) => {
       // validate: (value) => value.length > 0
     });
     if (editCourse) {
-      console.log("already existing tags : ", course?.tag);
       setTagList(course?.tag?.split(","));
       setValue(name, course?.tag);
     }

@@ -28,14 +28,12 @@ const VideoSideBar = ({ reviewModal, setReviewModal, sideBarActive, setSideBarAc
         return;
       }
 
-      // console.log("courseEntiredata : ", courseEntireData)
 
       const currentSectionIndex = courseEntireData.courseContent.findIndex((data) => data?._id === sectionId)
       const currentSubSectionIndex = courseSectionData?.[currentSectionIndex]?.subSection.findIndex((data) => data?._id === subSectionId);
       const activeSubSectionId = courseSectionData[currentSectionIndex]?.subSection?.[currentSubSectionIndex]?._id;
 
       // set current section
-      // console.log("courseSectionData : ", courseSectionData, currentSubSectionIndex)
       setActiveStatus(courseSectionData?.[currentSectionIndex]?._id);
       // set current subSection
       setVideoBarActive(activeSubSectionId);

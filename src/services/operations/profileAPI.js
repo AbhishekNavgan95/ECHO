@@ -11,7 +11,6 @@ export const updatePfp = async (token, file, dispatch) => {
   const toastId = toast.loading("Uploading...");
   try {
     const formData = new FormData();
-    // console.log("formData: ", formData);
     formData.append("thumbnail", file);
 
     const response = await apiConnector(
@@ -23,7 +22,6 @@ export const updatePfp = async (token, file, dispatch) => {
       }
     );
 
-    console.log("upload image response : ", response);
     if (!response.data.success) {
       throw new Error(response.data.message);
     }
@@ -72,7 +70,6 @@ export const updateProfile = async (token, formData, dispatch) => {
 // delete user account
 export const deleteAccount = async (token, dispatch, navigate) => {
   const toastId = toast.loading("Processing...");
-  console.log("delete account")
 
   try {
     const response = await apiConnector(
@@ -123,7 +120,6 @@ export const updatePassword = async (token, formData, dispatch) => {
     }
 
     dispatch(setProgress(60))
-    console.log("Password update API response: ", reponse?.data?.message);
     toast.dismiss(toastid);
     toast.success("your Password has been is updated successfully");
   } catch (e) {
@@ -180,7 +176,6 @@ export async function getInstructorData(token, dispatch) {
 
     console.log("GET_INSTRUCTOR_DATA_API_RESPONSE : ", response);
     if (!response?.data?.success) {
-      console.log("response : ", response)
       throw new Error(response?.data?.message);
     }
     dispatch(setProgress(60));

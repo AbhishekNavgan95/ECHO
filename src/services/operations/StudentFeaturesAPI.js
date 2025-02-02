@@ -28,7 +28,6 @@ function loadScript(src) {
 async function varifyPayment(bodyData, token, navigate, dispatch) {
   const toastId = toast.loading("varifying payment...");
   // dispatch(setPaymentLoading(true));
-  console.log("body data: ", bodyData);
 
   try {
     const response = await apiConnector("POST", COURSE_VERIFY_API, bodyData, {
@@ -106,14 +105,11 @@ export const buyCourse = async (
 
       },
     };
-    
-    // console.log("option : ", options);
 
     const paymentObject = new window.Razorpay(options)
     paymentObject.open();
     paymentObject.on("payment.failed", (response ) => {
       toast.error("Oops, payment failed")
-      console.log(response?.error)
     })
 
   } catch (e) {

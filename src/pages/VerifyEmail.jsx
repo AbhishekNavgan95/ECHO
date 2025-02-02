@@ -14,7 +14,6 @@ const VerifyEmail = () => {
   const [otp, setOtp] = useState("");
   const loading = useSelector((state) => state.auth.loading);
   const signUpData = useSelector((state) => state.auth.signupData);
-  //   console.log("signup data : ",signUpData)
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
