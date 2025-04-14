@@ -43,12 +43,27 @@ import { setProgress } from "./slices/loadingBarSlice";
 import PlayGround from "./pages/PlayGround";
 import RoomList from "./components/cors/chat/RoomList";
 import ChatView from "./components/cors/chat/ChatView";
+import CodeSpace from "./pages/CodeSpace";
+import JoinCodeSpace from "./pages/JoinCodeSpace";
+import { io } from "socket.io-client";
+
+const SERVER_URL = import.meta.env.VITE_SERVER_URI
+
+export const socket = io(SERVER_URL, {
+    withCredentials: true,
+    transports: ["websocket"],
+    autoConnect: true,
+});
+
 
 function App() {
   const user = useSelector((state) => state.profile.user);
   const location = useLocation();
   const { progress } = useSelector(state => state.loadingBar);
   const dispatch = useDispatch();
+
+  const showNav = location?.pathname?.includes("view-course") || location?.pathname?.includes("code-space/")  ? false : true
+  const showFooter = location?.pathname?.includes("view-course") || location?.pathname?.includes("code-space/") ? false : true
 
   return (
     <div className="w-screen min-h-screen bg-richblack-900">
@@ -59,8 +74,7 @@ function App() {
         onLoaderFinished={() => dispatch(setProgress(0))}
       />
       {
-        !location?.pathname?.includes("view-course") &&
-        <Navbar />
+        showNav && <Navbar />
       }
       {/* <ScrollToTop /> */}
 
@@ -74,6 +88,7 @@ function App() {
         <Route path="catalog" element={<Catalog />} />
         <Route path="catalog/:courseId" element={<CourseDetails />} />
         <Route path="courses/:courseId" element={<CourseDetails />} />
+        <Route path="code-space/:codeSpaceId" element={<JoinCodeSpace />} />
         <Route
           path="signup"
           element={
@@ -143,6 +158,7 @@ function App() {
               <Route path="edit-course/:id" element={<EditCourse />} />
             </>
           ) : null}
+          <Route path="code-space" element={<CodeSpace />} />
           <Route path="settings" element={<Settings />} />
         </Route>
         <Route path="view-course" element={
@@ -164,8 +180,7 @@ function App() {
       </Routes>
 
       {
-        location.pathname.includes("dashboard") || location.pathname.includes("view-course") ?
-          null : <Footer />
+        showFooter && <Footer />
       }
 
     </div>

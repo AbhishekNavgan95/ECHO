@@ -25,7 +25,7 @@ const Sidebar = () => {
     <>
       <div
         className= "w-full max-w-maxContent mx-auto py-3 px-5 h-max z-[2] text-richblack-5 bg-richblack-800 ">
-        <div className="md:flex justify-between md:flex-row">
+        <div className="md:flex justify-between items-center md:flex-row">
           <div className="flex md:flex-row justify-center md:justify-between ">
             {sidebarLinks.map((link, index) => {
               if (link.type && user?.accountType === link.type || link.type === undefined) {
@@ -36,7 +36,7 @@ const Sidebar = () => {
               }
             })}
           </div>
-          <div className="hidden md:flex flex-col gap-1">
+          <div className="hidden md:flex flex-col items-center gap-1">
             <DangerButton
               action={() =>
                 setModal({

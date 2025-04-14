@@ -6,16 +6,9 @@ import { IoSendSharp } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import toast from "react-hot-toast";
 import RoomList from './RoomList';
+import { socket } from "@/App";
 
 const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
-const SERVER_URL = import.meta.env.VITE_SERVER_URI
-
-const socket = io(SERVER_URL, {
-    withCredentials: true,
-    transports: ["websocket"],
-    autoConnect: true,
-});
-
 
 const ChatView = () => {
     const { user } = useSelector((state) => state.profile);

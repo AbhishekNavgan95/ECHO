@@ -7,16 +7,16 @@ const Modal = ({ modalData }) => {
 
   return (
     <>
-    <div onClick={modalData?.btn2Handler} className="w-full h-full bg-opec fixed top-0 left-0 z-[10]">
-      <div className="text-richblack-5  absolute bg-richblack-800 top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%] rounded-lg" onClick={(e) => e.stopPropagation()}>
-        <div className="flex flex-col py-10 px-14 items-center gap-5">
+    <div onClick={modalData?.btn2Handler} className="w-full h-full bg-opec backdrop-blur-sm fixed grid place-items-center top-0 left-0 z-[10]">
+      <div className="text-richblack-5 w-max bg-richblack-800 min-w-[400px] rounded-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="flex flex-col py-8 px-8 items-center gap-y-7">
           <div className="flex flex-col gap-2 items-center">
-            <h3 className="text-2xl ">{modalData?.heading}</h3>
-            <p className="text-lg text-richblack-300">
+            <h3 className="text-xl font-semibold text-center">{modalData?.heading}</h3>
+            <p className="text-sm text-richblack-300 text-center">
               {modalData?.subHeading}
             </p>
           </div>
-          <div className="flex gap-10">
+          <div className="flex gap-x-5">
             <ActionButton
               active
               onClick={modalData.btn1Handler}

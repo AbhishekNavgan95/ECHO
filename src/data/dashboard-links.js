@@ -62,5 +62,12 @@ export const sidebarLinks = [
     path: "settings",
     icon: "VscSettingsGear",
     type: ACCOUNT_TYPE.STUDENT,
-  }
+  },
+  {
+    id: 9,
+    name: "Code Space",
+    path: "code-space",
+    // type: ACCOUNT_TYPE.INSTRUCTOR,
+    icon: "VscDebug",
+  },
 ];

@@ -77,3 +77,11 @@ export const settingsEndpoints = {
   CHANGE_PASSWORD_API: BASE_URL + "/auth/changepassword",
   DELETE_PROFILE_API: BASE_URL + "/profile/deleteProfile",
 };
+
+export const codeSpaceEndpoints = {
+  GET_CODE_ROOMS: BASE_URL + '/codespace/get',
+  CREATE_CODE_ROOM: BASE_URL + '/codespace/create',
+  DELETE_CODE_ROOM: BASE_URL + '/codespace/delete',
+  JOIN_CODE_ROOM: BASE_URL + '/codespace/join',
+  UPDATE_ROLE: BASE_URL + '/codespace/updaterole',
+}

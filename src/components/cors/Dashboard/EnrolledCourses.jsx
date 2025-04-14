@@ -33,7 +33,7 @@ const EnrolledCourses = () => {
   }, []);
 
   return (
-    <div>
+    <>
       <section className="flex flex-col w-full px-5 gap-10 justify-center mx-auto py-10  xl:py-20">
         <h2 className="text-3xl xl:text-4xl">My Courses</h2>
         <div className="flex w-full flex-col xl:flex-row gap-5 justify-between items-center bg-richblack-900 ">
@@ -75,7 +75,7 @@ const EnrolledCourses = () => {
             )}
         </div>
       </section>
-    </div>
+    </>
   );
 };
 
