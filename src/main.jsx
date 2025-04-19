@@ -7,18 +7,23 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "./reducer";
 import { Toaster } from "react-hot-toast"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const store = configureStore({
   reducer: rootReducer,
 });
 
+const queryClient = new QueryClient()
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
         <App />
         <Toaster />
-    </BrowserRouter>
-  </Provider>
+      </BrowserRouter>
+    </QueryClientProvider>
+  </Provider >
 );
 
 

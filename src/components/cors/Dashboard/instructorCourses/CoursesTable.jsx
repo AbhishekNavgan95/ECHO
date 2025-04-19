@@ -62,7 +62,7 @@ export default function CoursesTable({ courses, setCourses }) {
                 <tr key={course?._id} className='py-2'>
                   <td className="">
                     <div className='flex flex-col lg:flex-row gap-x-3 justify-start'>
-                      <img loading="lazy" src={course?.thumbnail} alt="thumbnail" className='h-[140px] w-[200px] self-center my-2 rounded-lg object-cover hidden lg:block '/>
+                      <img loading="lazy" src={course?.thumbnail} alt="thumbnail" className='h-[140px] w-[200px] aspect-video self-center my-2 rounded-lg object-cover hidden lg:block '/>
                       <div className='flex flex-col justify-center my-3'>
                         <p className='text-xl text-richblack-5 line-clamp-2'>{course?.courseTitle}</p>
                         <p className='line-clamp-1'>{course.courseDescription}</p>

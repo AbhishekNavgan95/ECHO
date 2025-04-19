@@ -45,16 +45,7 @@ import RoomList from "./components/cors/chat/RoomList";
 import ChatView from "./components/cors/chat/ChatView";
 import CodeSpace from "./pages/CodeSpace";
 import JoinCodeSpace from "./pages/JoinCodeSpace";
-import { io } from "socket.io-client";
-
-const SERVER_URL = import.meta.env.VITE_SERVER_URI
-
-export const socket = io(SERVER_URL, {
-    withCredentials: true,
-    transports: ["websocket"],
-    autoConnect: true,
-});
-
+import { SocketProvider } from "./contexts/SocketContext";
 
 function App() {
   const user = useSelector((state) => state.profile.user);
@@ -62,7 +53,7 @@ function App() {
   const { progress } = useSelector(state => state.loadingBar);
   const dispatch = useDispatch();
 
-  const showNav = location?.pathname?.includes("view-course") || location?.pathname?.includes("code-space/")  ? false : true
+  const showNav = location?.pathname?.includes("view-course") || location?.pathname?.includes("code-space/") ? false : true
   const showFooter = location?.pathname?.includes("view-course") || location?.pathname?.includes("code-space/") ? false : true
 
   return (
@@ -82,13 +73,23 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
-        <Route path="chat" element={<Chat />} />
-        <Route path='chat/channels' element={<ChatView />} />
+        <Route path="chat">
+          <Route index element={<Chat />} />
+          <Route path='channels' element={
+            <SocketProvider>
+              <ChatView />
+            </SocketProvider>
+          } />
+        </Route>
         <Route path="playground" element={<PlayGround />} />
         <Route path="catalog" element={<Catalog />} />
         <Route path="catalog/:courseId" element={<CourseDetails />} />
         <Route path="courses/:courseId" element={<CourseDetails />} />
-        <Route path="code-space/:codeSpaceId" element={<JoinCodeSpace />} />
+        <Route path="code-space/:codeSpaceId" element={
+          <SocketProvider>
+            <JoinCodeSpace />
+          </SocketProvider>
+        } />
         <Route
           path="signup"
           element={

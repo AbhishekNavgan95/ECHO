@@ -79,6 +79,7 @@ export const settingsEndpoints = {
 };
 
 export const codeSpaceEndpoints = {
+  GET_CODE_ROOM: BASE_URL + '/codespace',
   GET_CODE_ROOMS: BASE_URL + '/codespace/get',
   CREATE_CODE_ROOM: BASE_URL + '/codespace/create',
   DELETE_CODE_ROOM: BASE_URL + '/codespace/delete',

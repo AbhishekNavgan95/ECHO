@@ -97,8 +97,8 @@ const Chat = () => {
                     </h5>
                     <div className='grid sm:grid-cols-2 mt-5 gap-2'>
                         {
-                            rules.map((r) => (
-                                <div className='py-2 px-5 rounded-lg bg-richblack-800 flex items-start gap-3'>
+                            rules.map((r, index) => (
+                                <div key={index} className='py-2 px-5 rounded-lg bg-richblack-800 flex items-start gap-3'>
                                     < VscDash className='mt-1 font-bold' />
                                     <span>
                                         <h5 className='font-semibold'> {r?.rule}</h5>

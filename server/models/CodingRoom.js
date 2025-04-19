@@ -38,9 +38,15 @@ const CodingRoomSchema = new mongoose.Schema({
       timestamp: { type: Date, default: Date.now },
     },
   ],
+  language: {
+    type: String,
+  },
+  editorType: {
+    type: String,
+  },
   codeContent: {
     type: String, // Store the latest version of the code
-    default: "",
+    default: "console.log(\"start writing code here...\")",
   },
 });
 
