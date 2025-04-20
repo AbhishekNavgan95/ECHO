@@ -15,7 +15,7 @@ const Tamplate = ({ formType }) => {
   return (
     <div className="flex justify-center  min-h-[calc(100vh-5rem)] items-center ">
       {loading ? (
-          <SyncLoader color="#E7C009" />
+          <SyncLoader color="#E5915C" />
       ) : (
         <div className=" max-w-maxContent w-full mx-auto py-10 gap-10 items-center justify-between flex flex-col xl:flex-row">
           <div className="flex flex-col gap-3 xl:w-2/5 md:w-8/12 w-11/12 ">

@@ -115,7 +115,7 @@ const CourseDetails = () => {
             {
                 (!courseData && loading)
                     ? <div className='text-white flex items-center justify-center min-h-[calc(100vh-6rem)]'>
-                        <SyncLoader color="#E7C009" />
+                        <SyncLoader color="#E5915C" />
                     </div>
                     : <div>
                         <div className='w-full bg-richblack-800 py-5 xl:py-10'>

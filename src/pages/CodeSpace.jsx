@@ -100,7 +100,7 @@ const CodeSpacesList = ({ token, user, data, setData, loading }) => {
     if (loading) {
         return (
             <div className='mt-5 h-full grid place-items-center'>
-                <p className='text-xl text-center py-24'><SyncLoader color="#E7C009" /></p>
+                <p className='text-xl text-center py-24'><SyncLoader color="#E5915C" /></p>
             </div>
         )
     }

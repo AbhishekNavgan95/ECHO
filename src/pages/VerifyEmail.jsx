@@ -51,7 +51,7 @@ const VerifyEmail = () => {
     <div className="text-richblack-5 flex justify-center items-center min-h-[calc(100vh-5rem)] w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12 flex-col gap-5 mx-auto">
       <form onSubmit={handleOnSubmit}>
         {loading ? (
-          <SyncLoader color="#E7C009" />
+          <SyncLoader color="#E5915C" />
         ) : (
           <div className="w-full">
             <h1 className="text-2xl md:text-3xl xl:text-4xl font-bold">Verify Email</h1>

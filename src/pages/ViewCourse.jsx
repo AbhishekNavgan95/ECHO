@@ -48,7 +48,7 @@ const ViewCourse = () => {
                         </div>
                     </div>
                     : <div className='flex flex-col min-h-screen items-center justify-center'>
-                        <SyncLoader color='#E7C009' />
+                        <SyncLoader color='#E5915C' />
                     </div>
             }
             {

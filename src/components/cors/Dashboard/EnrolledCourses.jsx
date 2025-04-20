@@ -62,7 +62,7 @@ const EnrolledCourses = () => {
                       <p className="text-nowrap ">progress : {Math.floor((enrolledCourses.courseProgress.find((progress) => progress?.courseId === course._id)?.completedVideos.length / countTotalLectures(course)) * 100)}%</p>
                       <span className="md:block self-stretch">
                         <ProgressBar
-                          bgColor={"#E7C009"}
+                          bgColor={"#E5915C"}
                           completed={Math.floor((enrolledCourses.courseProgress.find((progress) => progress?.courseId === course._id)?.completedVideos.length / countTotalLectures(course)) * 100)}
                           height="8px"
                           isLabelVisible={false}

@@ -91,7 +91,7 @@ const About = () => {
           <div className="flex items-center flex-col lg:flex-row justify-between gap-10">
             <div className="sm:w-10/12 nd:w-1/2 xl:w-[45%] flex flex-col gap-10">
               <h2 className="text-3xl xl:text-4xl font-semibold  text-center md:text-start">
-                <span className="bg-gradient-to-br from-[#e9633e] to-[#ffe988] text-transparent bg-clip-text font-bold">
+                <span className="bg-gradient-to-br from-[#e9633e] to-[#E5915C] text-transparent bg-clip-text font-bold">
                   Our Vision
                 </span>
               </h2>

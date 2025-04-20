@@ -25,7 +25,7 @@ const ResetPassword = () => {
     <form onSubmit={handleOnSubmit} className="">
       <div className="flex justify-center  min-h-[calc(100vh-5rem)] items-center">
         {loading ? (
-          <SyncLoader color="#E7C009" />
+          <SyncLoader color="#E5915C" />
         ) : (
           <div className="w-10/12 md:w-8/12 lg:w-6/12 xl:w-3/12 flex flex-col gap-5">
             <p className="text-2xl md:text-3xl xl:text-4xl font-bold text-richblack-5 ">

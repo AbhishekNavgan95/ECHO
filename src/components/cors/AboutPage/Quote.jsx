@@ -10,7 +10,7 @@ const Quote = () => {
         {" "}expertise, {" "}
       </span>
       and
-      <span className='bg-gradient-to-tr from-caribbeangreen-100 to-[#F09819] text-transparent bg-clip-text font-bold'>
+      <span className='bg-gradient-to-tr from-caribbeangreen-100 to-[#E5915C] text-transparent bg-clip-text font-bold'>
         {" "}community{" "}
       </span>
       to create an unparalleled educational experience.

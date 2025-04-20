@@ -37,7 +37,7 @@ const MyCourses = () => {
                     {
                         courses 
                         ? <CoursesTable courses={courses} setCourses={setCourses} /> 
-                        : <SyncLoader color="#E7C009" />
+                        : <SyncLoader color="#E5915C" />
                     }
                 </section>
             </div>

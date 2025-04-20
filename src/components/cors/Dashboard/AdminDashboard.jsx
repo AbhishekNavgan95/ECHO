@@ -32,7 +32,7 @@ const AdminDashboard = () => {
                     {
                         loading
                             ? <div className='w-full flex justify-center text-xl'>
-                                <SyncLoader color='#E7C009' />
+                                <SyncLoader color='#E5915C' />
                             </div>
                             : categoryData.length > 0
                                 ?

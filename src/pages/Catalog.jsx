@@ -91,8 +91,8 @@ const Catalog = () => {
                                     </button>
                                 )
                             }) : (
-                                <div className='text-nowrap min-h-[200px] flex items-center justify-center'>
-                                    😕 No categories found...
+                                <div className='text-nowrap min-h-[200px] text-xs text-center flex items-center justify-center'>
+                                    No categories found...
                                 </div>
                             )
                         }
@@ -101,7 +101,7 @@ const Catalog = () => {
                         loading ? <p
                             className='w-full text-center col-span-2 min-h-[300px] flex items-center justify-center'
                         >
-                            <SyncLoader color="#E7C009" />
+                            <SyncLoader color="#E5915C" />
                         </p> :
                             <div className='w-full grid grid-cols-2 xl:grid-cols-3 gap-5 place-items-start'>
                                 {
