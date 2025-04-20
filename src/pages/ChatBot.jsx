@@ -8,12 +8,12 @@ import ReactMarkdown from "react-markdown";
 const allQuestions = [
   "What courses are available?",
   "How do I track my progress?",
-  "Can I retake a quiz?",
-  "What is ECHO Premium?",
+  "How can I purchase a course?",
+  "What is ECHO aimed for?",
   "Where can I find my enrolled courses?",
   "How to contact support?",
-  "What certifications do I get?",
-  "Is there a free trial?",
+  "How can I connect with instructors?",
+  "Is there any cost for using ECHO?",
   "How do I change my profile info?",
   "How do I reset my password?",
 ];
@@ -32,7 +32,7 @@ const ChatBot = () => {
 
   const shuffleQuestions = () => {
     const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
-    setRandomQuestions(shuffled.slice(0, 6)); // Show 4 random
+    setRandomQuestions(shuffled.slice(0, 4)); // Show 4 random
   };
 
   const { token } = useSelector((state) => state.auth);
@@ -115,9 +115,9 @@ const ChatBot = () => {
       {/* Chatbot Toggle Button */}
       <button
         onClick={() => setChatBotModalOpen((prev) => !prev)}
-        className="fixed rounded-full border-[6px] border-yellow-100 bottom-10 right-10 hover:scale-110 transition-all duration-100 z-[11]"
+        className="fixed rounded-full border-[6px] border-yellow-100 bottom-5 right-5 md:bottom-10 md:right-10 hover:scale-110 transition-all duration-100 z-[11]"
       >
-        <img className="w-14 h-14 rounded-full" src={botLogo} alt="Chatbot" />
+        <img className="w-8 h-8 md:w-14 md:h-14 rounded-full" src={botLogo} alt="Chatbot" />
       </button>
 
       {/* Animated Chat Modal */}
@@ -131,29 +131,29 @@ const ChatBot = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, x: 350, y: 400, scale: 0 }}
               transition={{ duration: 0.1, ease: "easeInOut" }}
-              className="w-full fixed bottom-32 right-12 z-40 max-w-2xl mx-auto p-4 bg-richblack-800 border border-richblack-600 rounded-md shadow-xl"
+              className="w-full fixed bottom-20 right-6 md:bottom-32 md:right-12 z-40 max-w-[350px] md:max-w-[440px] lg:max-w-[600px] mx-auto p-2 md:p-4 bg-richblack-800 border border-richblack-600 rounded-md shadow-xl"
             >
               {/* Chat history */}
-              <div className="bg-gray-100 p-4 rounded-md h-[600px] space-y-2 overflow-y-auto mb-4">
+              <div className="bg-gray-100 p-4 rounded-md h-[450px] md:h-[500px] xl:h-[550px] space-y-2 overflow-y-auto mb-4">
                 {messages.length === 0 && (
                   <div className="text-center h-full text-gray-500 flex items-center justify-center">
                     <div className="flex items-center justify-center flex-col gap-y-4">
                       
-                      <img src={botLogo} className="mix-blend-color-dodge rounded-full w-32 h-32" alt="" />
+                      <img src={botLogo} className="mix-blend-color-dodge rounded-full w-12 h-12 sm:w-20 sm:h-20 md:w-32 md:h-32" alt="" />
 
                       <div>
-                        <h4 className="text-4xl mb-4 font-semibold text-richblack-25">Hello 👋,</h4>
-                        <h4 className="text-2xl font-semibold text-richblack-25">EchoBot at Your Service</h4>
-                        <p className="text-base mt-2 text-center text-richblack-100">
+                        <h4 className="text-2xl lg:text-4xl mb-4 font-semibold text-richblack-25">Hello 👋,</h4>
+                        <h4 className="text-xl md:text-2xl font-semibold text-richblack-25">EchoBot at Your Service</h4>
+                        <p className="text-base mt-2 text-center w-[80%] mx-auto text-richblack-100">
                           Ask me about the platform. Or just pretend like you know it already.
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid md:grid-cols-2 gap-2">
                         {randomQuestions.map((question, index) => (
                           <button
                             key={index}
-                            className="bg-white text-black px-3 py-1 rounded-full hover:bg-yellow-100 text-sm transition"
+                            className="bg-white text-black px-3 py-1 rounded-full hover:bg-yellow-100 text-xs md:text-sm transition"
                             onClick={() => setInput(question)}
                           >
                             {question}
@@ -167,7 +167,7 @@ const ChatBot = () => {
                 {messages.map((msg, idx) => (
                   <div key={idx} className={msg.role === "user" ? "text-right" : "text-left"}>
                     <span
-                      className={`inline-block text-lg leading-8 max-w-[500px] whitespace-pre-wrap px-3 py-2 rounded ${msg.role === "user"
+                      className={`inline-block text-sm md:text-lg leading-6 md:leading-8 max-w-[500px] whitespace-pre-wrap px-3 py-1 md:py-2 rounded ${msg.role === "user"
                         ? "bg-richblack-100 text-richblack-900"
                         : "bg-white text-black"
                         }`}
@@ -206,7 +206,7 @@ const ChatBot = () => {
 
                 {streaming && (
                   <div className="text-left">
-                    <span className="inline-block  text-lg leading-8 whitespace-pre-wrap px-3 py-2 max-w-[500px] bg-white text-black rounded">
+                    <span className="inline-block text-sm md:text-lg leading-6 md:leading-8 whitespace-pre-wrap px-3 py-1 max-w-[500px] bg-white text-black rounded">
                       <ReactMarkdown>{streamedResponse}</ReactMarkdown>
                     </span>
                   </div>

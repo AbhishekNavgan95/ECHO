@@ -13,6 +13,8 @@ import Modal from '@/components/common/Modal'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CiLock } from "react-icons/ci";
+import { MdOutlineDelete } from "react-icons/md";
+import { MdArrowRight } from "react-icons/md";
 
 
 const CodeSpace = () => {
@@ -33,23 +35,25 @@ const CodeSpace = () => {
     })
 
     return (
-        <section className='min-h-[calc(100vh-8rem)] p-10 bg-richblack-800 border flex flex-col w-full border-richblack-600 my-10 rounded-lg'>
-            <div className='flex flex-col justify-center h-full w-full '>
-                <div className='flex items-center justify-between gap-x-3'>
-                    <h3 className='text-3xl'>Welcome to <HighlightText text="code space" /></h3>
+        <section className='px-3'>
+            <div className='min-h-[calc(100vh-8rem)] p-4 py-6 md:p-10 bg-richblack-800 border flex flex-col w-full border-richblack-600 my-10 rounded-lg'>
+                <div className='flex flex-col justify-center h-full w-full '>
+                    <div className='flex flex-col md:flex-row gap-y-4 items-center justify-between gap-x-3'>
+                        <h3 className='text-2xl md:text-3xl text-center'>Welcome to <HighlightText text="code space" /></h3>
+                        {
+                            user?.accountType === "Instructor" &&
+                            <ActionButton onClick={() => setFormOpen(prev => !prev)} active >Create code space</ActionButton>
+                        }
+                    </div>
+
+                    <CodeSpacesList token={token} user={user} loading={isPending} data={codeSpaces} />
+
                     {
-                        user?.accountType === "Instructor" &&
-                        <ActionButton onClick={() => setFormOpen(prev => !prev)} active >Create code space</ActionButton>
+                        formOpen && (
+                            <CreateCodeSpaceForm setFormOpen={setFormOpen} token={token} />
+                        )
                     }
                 </div>
-
-                <CodeSpacesList token={token} user={user} loading={isPending} data={codeSpaces} />
-
-                {
-                    formOpen && (
-                        <CreateCodeSpaceForm setFormOpen={setFormOpen} token={token} />
-                    )
-                }
             </div>
         </section>
     )
@@ -153,10 +157,10 @@ const CodeSpaceCard = ({ deleteCodeSpace, joinCodeSpace, data, isOwner }) => {
 
     return (
         <div className='bg-richblack-900 border border-richblack-600 rounded-md py-2 px-4 mt-3'>
-            <div className='flex items-center justify-between overflow-hidden relative'>
+            <div className='flex items-center justify-between overflow-hidden gap-x-2 relative'>
                 <span className='flex items-center gap-x-4 relative'>
-                    <p className='text-base capitalize ml-6'>{data?.name}</p>
-                    <div className='bg-caribbeangreen-100 absolute text-xs w-[10px] aspect-square text-center rounded-full uppercase'></div>
+                    <p className='text-sm md:text-base capitalize line-clamp-1 md:ml-6'>{data?.name}</p>
+                    <div className='bg-caribbeangreen-100 hidden md:block absolute text-xs w-[10px] aspect-square text-center rounded-full uppercase'></div>
                     {
                         isPrivate && (
                             <div className='text-base text-white'>
@@ -170,13 +174,28 @@ const CodeSpaceCard = ({ deleteCodeSpace, joinCodeSpace, data, isOwner }) => {
                     <span className='flex gap-x-2'>
                         {
                             isOwner && (
-                                <DangerButton action={() => handleDelete(data?._id)} active className="">Delete</DangerButton>
+                                <DangerButton action={() => handleDelete(data?._id)} active className="">
+                                    <span className='hidden md:block'>
+                                        Delete
+                                    </span>
+                                    <MdOutlineDelete />
+                                </DangerButton>
                             )
                         }
                         {
                             isPrivate && !isOwner
-                                ? <ActionButton onClick={openKeyModal} disabled={isKicked} active className="">Join</ActionButton>
-                                : <ActionButton onClick={() => joinCodeSpace(data?._id)} disabled={isKicked} active className="">Join</ActionButton>
+                                ? <ActionButton onClick={openKeyModal} disabled={isKicked} active className="">
+                                    <span className='hidden md:block'>
+                                        Join
+                                    </span>
+                                    <MdArrowRight />
+                                </ActionButton>
+                                : <ActionButton onClick={() => joinCodeSpace(data?._id)} disabled={isKicked} active className="">
+                                    <span className='hidden md:block'>
+                                        Join
+                                    </span>
+                                    <MdArrowRight />
+                                </ActionButton>
                         }
                     </span>
                 </div>

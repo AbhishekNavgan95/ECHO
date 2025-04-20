@@ -26,8 +26,7 @@ const Dashboard = () => {
       <div className="w-full bg-richblack-800">
         <Sidebar />
       </div>
-      <div className="text-richblack-5 h-full w-full  mx-auto  max-w-maxContent">
-        
+      <div className="text-richblack-5 h-full w-full mx-auto  max-w-maxContent">
         <Outlet />
       </div>
     </div>

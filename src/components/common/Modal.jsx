@@ -8,7 +8,7 @@ const Modal = ({ modalData }) => {
   return (
     <>
     <div onClick={modalData?.btn2Handler} className="w-full h-full bg-opec backdrop-blur-sm fixed grid place-items-center top-0 left-0 z-[10]">
-      <div className="text-richblack-5 w-max bg-richblack-800 min-w-[400px] rounded-lg" onClick={(e) => e.stopPropagation()}>
+      <div className="text-richblack-5 w-max bg-richblack-800 min-w-[300px] md:min-w-[400px] rounded-lg" onClick={(e) => e.stopPropagation()}>
         <div className="flex flex-col py-8 px-8 items-center gap-y-7">
           <div className="flex flex-col gap-2 items-center">
             <h3 className="text-xl font-semibold text-center">{modalData?.heading}</h3>

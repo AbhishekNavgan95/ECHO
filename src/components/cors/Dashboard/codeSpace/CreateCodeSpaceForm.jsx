@@ -50,7 +50,7 @@ const CreateCodeSpaceForm = ({ token, setFormOpen }) => {
 
     return (
         <section onClick={() => setFormOpen(false)} className='fixed inset-0 bg-opec backdrop-blur-sm z-[10] grid place-items-center'>
-            <div onClick={(e) => e.stopPropagation()} className='bg-richblack-700 p-5 rounded-lg w-[480px] min-h-[100px]'>
+            <div onClick={(e) => e.stopPropagation()} className='bg-richblack-700 p-5 rounded-lg max-w-[340px] md:max:w-[480px] min-h-[100px]'>
                 <div className='flex items-center justify-between'>
                     <h4 className='font-semibold text-lg'>Create a new code space.</h4>
                     <button onClick={() => setFormOpen(false)} className='text-2xl'><MdOutlineClose /></button>
@@ -70,7 +70,7 @@ const CreateCodeSpaceForm = ({ token, setFormOpen }) => {
                         {errors.name && <p className='text-red-600 text-sm mt-1'>{errors.name.message}</p>}
                     </div>
 
-                    <div>
+                    <div className=''>
                         <label htmlFor="visibility">Visibility</label>
                         <select
                             id="visibility"
