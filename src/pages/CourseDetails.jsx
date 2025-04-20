@@ -202,7 +202,7 @@ const CourseDetails = () => {
                                             <span className='flex items-center flex-col gap-5'>
                                                 <img className='w-[200px] aspect-square rounded-full object-cover border border-richblack-600' src={courseData?.instructor?.image} loading="lazy" alt="instructor" />
                                                 <div className='flex items-center md:items-center flex-col '>
-                                                    <p className='text-xl'>{`${courseData?.instructor.firstName} ${courseData?.instructor.lastName}`}</p>
+                                                    <p className='text-xl'>{`${courseData?.instructor?.firstName} ${courseData?.instructor?.lastName}`}</p>
                                                     <p className='text-richblack-300'>{courseData?.instructor?.email}</p>
                                                 </div>
                                             </span>

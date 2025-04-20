@@ -36,7 +36,7 @@ const CoursePurchaseCard = ({ handleAddToCart, setConfirmationModal, handleBuyCo
             }
 >
             {
-              user && courseData?.studentsEnrolled.includes(user?._id) ? "Go to course" : "Buy now"
+              user && courseData?.studentsEnrolled?.includes(user?._id) ? "Go to course" : "Buy now"
             }
           </ActionButton>
           {

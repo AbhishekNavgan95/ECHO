@@ -40,12 +40,11 @@ import { ACCOUNT_TYPE } from "./utils/constants";
 import AdminDashboard from "./components/cors/Dashboard/AdminDashboard";
 import AddCategory from "./components/cors/Dashboard/AddCategory";
 import { setProgress } from "./slices/loadingBarSlice";
-import PlayGround from "./pages/PlayGround";
-import RoomList from "./components/cors/chat/RoomList";
 import ChatView from "./components/cors/chat/ChatView";
 import CodeSpace from "./pages/CodeSpace";
 import JoinCodeSpace from "./pages/JoinCodeSpace";
 import { SocketProvider } from "./contexts/SocketContext";
+import ChatBot from "./pages/ChatBot";
 
 function App() {
   const user = useSelector((state) => state.profile.user);
@@ -55,6 +54,7 @@ function App() {
 
   const showNav = location?.pathname?.includes("view-course") || location?.pathname?.includes("code-space/") ? false : true
   const showFooter = location?.pathname?.includes("view-course") || location?.pathname?.includes("code-space/") ? false : true
+  const showChatBot = !(location?.pathname?.includes("dashboard") ? true : false)
 
   return (
     <div className="w-screen min-h-screen bg-richblack-900">
@@ -81,7 +81,6 @@ function App() {
             </SocketProvider>
           } />
         </Route>
-        <Route path="playground" element={<PlayGround />} />
         <Route path="catalog" element={<Catalog />} />
         <Route path="catalog/:courseId" element={<CourseDetails />} />
         <Route path="courses/:courseId" element={<CourseDetails />} />
@@ -179,11 +178,12 @@ function App() {
         </Route>
         <Route path="*" element={<Error />} />
       </Routes>
-
       {
         showFooter && <Footer />
       }
-
+      {
+        showChatBot && <ChatBot />
+      }
     </div>
   );
 }

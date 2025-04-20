@@ -8,6 +8,11 @@ body {
   scroll-behavior: smooth;
 }
 
+body.no-scroll {
+  max-height: 100vh;
+  overflow: hidden;
+}
+
 .move-circle {
   animation: circle 2s linear infinite;
 }

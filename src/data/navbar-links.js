@@ -12,10 +12,6 @@ export const NavbarLinks = [
     path: '/chat'
   },
   {
-    title: 'Playground',
-    path: '/playground'
-  },
-  {
     title: "About Us",
     path: "/about",
   },

@@ -42,8 +42,8 @@ const ExploreMore = () => {
               key={index}
               className={
                 currentTab === tab
-                  ? "bg-richblack-900 text-lg flex flex-row justify-center item-center gap-2 py-2 px-4 rounded-full w-full lg:w-auto shadow-sm shadow-richblack-300 transition-all duration-300"
-                  : "bg-richblack-700 text-lg flex flex-row justify-center item-center gap-2 py-2 px-4 rounded-full text-richblack-100 w-full lg:w-auto transition-all duration-300"
+                  ? "bg-richblack-900 text-lg flex flex-row justify-center item-center gap-2 py-2 px-6 rounded-full w-full lg:w-auto shadow-sm shadow-richblack-300 transition-all duration-300"
+                  : "bg-richblack-700 text-lg flex flex-row justify-center item-center gap-2 py-2 px-6 rounded-full text-richblack-100 w-full lg:w-auto transition-all duration-300"
               }
               onClick={() => setMyCards(tab)}
             >

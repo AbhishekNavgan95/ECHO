@@ -14,12 +14,14 @@ const courseRoutes = require("./routes/Course");
 const chatRoutes = require("./routes/Chat");
 const { contactUs } = require("./controllers/ContactUs");
 const codeSpace = require("./routes/CodeRoom");
+const { streamChatResponse } = require("./controllers/geminiControllers");
 
 // Import DB config
 const { connectToDB } = require("./config/databse");
 const socketConnect = require("./config/socket");
 const { cloudinaryConnect } = require("./config/cloudinary");
 const listenToSocketEvents = require("./controllers/socket");
+const { auth } = require("./middlewares/auth");
 
 // Initialize Server
 const PORT = process.env.PORT || 4000;
@@ -59,6 +61,7 @@ app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/chat", chatRoutes);
 app.use("/api/v1/codespace", codeSpace);
+app.use("/api/v1/generate", streamChatResponse);
 
 app.get("/", (req, res) => {
   res.json({
