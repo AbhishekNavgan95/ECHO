@@ -38,7 +38,7 @@ const EnrolledCourses = () => {
         <h2 className="text-3xl xl:text-4xl">My Courses</h2>
         <div className="flex w-full flex-col xl:flex-row gap-5 justify-between items-center bg-richblack-900 ">
           {!enrolledCourses ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 w-full 50 gap-5 ">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 w-full gap-5 ">
               <EnrolledCourseSkeleton count={6} />
             </div>
           ) : enrolledCourses?.courses?.length <= 0

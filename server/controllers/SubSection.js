@@ -40,12 +40,15 @@ exports.createSubSection = async (req, res) => {
       })
     }
 
+    // console.log("uploadDetils : ", uploadDetils)
+
     // create subsection and enter in db along with url recieved from cloud
     const subSectionDetails = await SubSection.create({
       title: title,
       timeDuration: timeDuration,
       description: description,
-      videoUrl: uploadDetils.secure_url,
+      // videoUrl: uploadDetils.secure_url,
+      publicId: uploadDetils.public_id
     });
 
     // update subsection into Section schema
@@ -89,6 +92,8 @@ exports.updateSubSection = async (req, res) => {
         .json({ success: false, message: "Section not found" });
     }
 
+    console.log("existing subsection : ", ifsection)
+
     // upload video to cloud
     const uploadDetils = await uploadImageTocloudinary(
       video,
@@ -109,7 +114,8 @@ exports.updateSubSection = async (req, res) => {
         title: title || SubSection.title,
         timeDuration: timeDuration || SubSection.timeDuration,
         description: description || SubSection.timeDuration, 
-        videoUrl: uploadDetils?.secure_url || SubSection.videoUrl,
+        // videoUrl: uploadDetils?.secure_url || SubSection.videoUrl,
+        publicId: uploadDetils?.public_id || SubSection.publicId
       },
       { new: true }
     );

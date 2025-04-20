@@ -5,6 +5,7 @@ const http = require("http");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
+const cloudinary = require('cloudinary').v2;
 
 // Import routes
 const userRoutes = require("./routes/User");
@@ -21,7 +22,7 @@ const { connectToDB } = require("./config/databse");
 const socketConnect = require("./config/socket");
 const { cloudinaryConnect } = require("./config/cloudinary");
 const listenToSocketEvents = require("./controllers/socket");
-const { auth } = require("./middlewares/auth");
+const { streamSignedVideo } = require("./controllers/Course");
 
 // Initialize Server
 const PORT = process.env.PORT || 4000;
@@ -53,6 +54,12 @@ app.use(
   })
 );
 
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
+
 // Routes
 app.use("/api/v1/contact", contactUs);
 app.use("/api/v1/auth", userRoutes);
@@ -62,6 +69,7 @@ app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/chat", chatRoutes);
 app.use("/api/v1/codespace", codeSpace);
 app.use("/api/v1/generate", streamChatResponse);
+app.get("/api/v1/videos/stream/:publicId", streamSignedVideo);
 
 app.get("/", (req, res) => {
   res.json({

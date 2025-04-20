@@ -178,16 +178,28 @@ const VideoDetails = ({ sideBarActive, setSideBarActive }) => {
                   }</ActionButton>
               }
             </div>
-            <div className=' border rounded-lg overflow-hidden border-richblack-600'>
-              <ReactPlayer
-                controls
-                onEnded={() => setVideoEnded(true)}
-                width="100%"
-                height="100%"
-                url={videoData?.videoUrl}
-              />
-            </div>
-
+            {
+              !videoData?.publicId ? (
+                <div className=' border rounded-lg overflow-hidden border-richblack-600'>
+                  <ReactPlayer
+                    controls
+                    onEnded={() => setVideoEnded(true)}
+                    width="100%"
+                    height="100%"
+                    url={videoData?.videoUrl}
+                  />
+                </div>)
+                : (
+                  <div div className=' border rounded-lg overflow-hidden border-richblack-600'>
+                    <video
+                      src={`${import.meta.env.VITE_BASE_URL}/videos/stream/${videoData?.publicId?.split('/')[1]}`}
+                      controls
+                      width="100%"
+                      preload="metadata"
+                    />
+                  </div>
+                )
+            }
             <div className='flex justify-start gap-3'>
               {
                 !isFirstVideo() &&
@@ -217,7 +229,7 @@ const VideoDetails = ({ sideBarActive, setSideBarActive }) => {
         <h4 className='text-2xl font-semibold'>{videoData.title}</h4>
         <p className='text-richblack-300'>{videoData.description}</p>
       </div>
-    </div>
+    </div >
   )
 }
 

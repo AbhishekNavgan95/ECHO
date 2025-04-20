@@ -5,6 +5,14 @@ const uploadImageTocloudinary = require("../utils/imageUploader");
 const Section = require("../models/Section");
 const SubSection = require("../models/Subsection");
 const CourseProgress = require("../models/CourseProgress");
+const got = require('got');
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
 
 // create Course
 exports.createCourse = async (req, res) => {
@@ -158,7 +166,7 @@ exports.editCourse = async (req, res) => {
 
     // check given tag is valid or not
     const CategoryDetails = await Category.findById(category);
- 
+
     if (!CategoryDetails) {
       return res.status(404).json({
         success: false,
@@ -347,14 +355,14 @@ exports.getCourseDetails = async (req, res) => {
         path: "ratingAndReviews",
         populate: {
           path: "user",
-          select: "firstName image lastName"
-        }
+          select: "firstName image lastName",
+        },
       })
       .populate({
         path: "courseContent",
         populate: {
           path: "subSection",
-          select: "description duraiton title"
+          select: "description duraiton title",
         },
       })
       .exec();
@@ -539,7 +547,6 @@ exports.getFullCourseDetails = async (req, res) => {
       userId: userId,
     });
 
-
     if (!courseDetails) {
       return res.status(400).json({
         success: false,
@@ -556,6 +563,14 @@ exports.getFullCourseDetails = async (req, res) => {
     });
 
     // const totalDuration = convertSecondsToDuration(totalDurationInSeconds);
+
+    courseDetails?.courseContent?.forEach((section) => {
+      section?.subSection?.forEach((subSection) => {
+        if (subSection?.publicId) {
+          subSection.videoUrl = undefined;
+        }
+      });
+    });
 
     return res.status(200).json({
       success: true,
@@ -583,29 +598,70 @@ exports.searchCourse = async (req, res) => {
 
     const courses = await Course.find({
       $or: [
-        {courseTitle : {$regex : searchParam , $options : "i"}},
+        { courseTitle: { $regex: searchParam, $options: "i" } },
         // {courseDescription : {$regex : searchParam , $options : "i"}}, // gives lots of unnecessory courses by matching words from description
-        {tag : {$regex : searchParam , $options : "i"}},
-      ]
-    })
-    
-    if(!courses) {
+        { tag: { $regex: searchParam, $options: "i" } },
+      ],
+    });
+
+    if (!courses) {
       return res.status(404).json({
         success: false,
-        message: "No courses found"
-      })
+        message: "No courses found",
+      });
     }
-    
+
     res.status(200).json({
       success: true,
       message: "Fetched Courses successfully",
-      data : courses
-    })
-  } catch(e) {
+      data: courses,
+    });
+  } catch (e) {
     console.log("error : ", e);
     res.status(500).json({
       success: false,
-      message: "Could not find any courses"
-    })
+      message: "Could not find any courses",
+    });
+  }
+};
+
+exports.streamSignedVideo = async (req, res) => {
+  try {
+    const { publicId } = req.params;
+
+    const videoUrl = cloudinary.url("assets/" + publicId, {
+      resource_type: "video",
+      secure: true,
+      sign_url: true, // Generates a signed URL
+    });
+
+    // Handle video streaming with range support
+    const range = req.headers.range;
+    if (!range) {
+      return res.status(400).send("Requires Range header");
+    }
+
+    const response = await got(videoUrl, { responseType: "buffer" }); // why I am getting 404 even after correct url?
+    // console.log("response : ", response)
+    const videoBuffer = response.rawBody;
+
+    const videoSize = videoBuffer.length;
+    const CHUNK_SIZE = 10 ** 6;
+    const start = Number(range.replace(/\D/g, ""));
+    const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+
+    const contentLength = end - start + 1;
+    const headers = {
+      "Content-Range": `bytes ${start}-${end}/${videoSize}`,
+      "Accept-Ranges": "bytes",
+      "Content-Length": contentLength,
+      "Content-Type": "video/mp4",
+    };
+
+    res.writeHead(206, headers);
+    res.end(videoBuffer.slice(start, end + 1));
+  } catch (error) {
+    console.error("Video stream error:", error.message);
+    res.status(500).send("Server error");
   }
 };
