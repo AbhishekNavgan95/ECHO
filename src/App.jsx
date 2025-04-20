@@ -45,12 +45,38 @@ import CodeSpace from "./pages/CodeSpace";
 import JoinCodeSpace from "./pages/JoinCodeSpace";
 import { SocketProvider } from "./contexts/SocketContext";
 import ChatBot from "./pages/ChatBot";
+import { useEffect } from "react";
 
 function App() {
   const user = useSelector((state) => state.profile.user);
   const location = useLocation();
   const { progress } = useSelector(state => state.loadingBar);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+    };
+
+    const handleKeyDown = (e) => {
+      if (
+        e.key === "F12" || // Developer tools
+        (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) || // Ctrl+Shift+I/J/C
+        (e.ctrlKey && e.key.toLowerCase() === "u") // Ctrl+U (view source)
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("contextmenu", handleContextMenu);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
 
   const showNav = location?.pathname?.includes("view-course") || location?.pathname?.includes("code-space/") ? false : true
   const showFooter = location?.pathname?.includes("view-course") || location?.pathname?.includes("code-space/") ? false : true
