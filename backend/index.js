@@ -26,10 +26,10 @@ app.use(express.json({ limit: '16mb' }));
 
 // -------------------- RATE LIMITERS --------------------
 
-// General limiter: 10 requests / 24 hours per IP for chat
+// General limiter: 20 requests / 24 hours per IP for chat
 const generalRateLimit = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
-  max: 10,
+  max: 20,
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) => {
@@ -44,10 +44,10 @@ const generalRateLimit = rateLimit({
   },
 });
 
-// Dedicated chat limiter: 10 chat requests / 24 hours per IP
+// Dedicated chat limiter: 20 chat requests / 24 hours per IP
 const chatRateLimit = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
-  max: 10, // 10 chat requests per 24 hours
+  max: 20, // 20 chat requests per 24 hours
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => {
@@ -64,7 +64,7 @@ const chatRateLimit = rateLimit({
     console.log(`Chat rate limit exceeded for IP: ${req.ip}`);
     return res.status(429).json({
       ok: false,
-      error: 'Daily chat limit exceeded (10 chats per 24 hours). Please try again tomorrow.',
+      error: 'Daily chat limit exceeded (20 chats per 24 hours). Please try again tomorrow.',
       rateLimitExceeded: true,
     });
   },
@@ -77,7 +77,7 @@ app.use(generalRateLimit);
 const upload = multer({ dest: 'uploads/' });
 
 // -------------------- ENV --------------------
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
 const PINECONE_INDEX = process.env.PINECONE_INDEX || 'quickstart';
@@ -257,8 +257,8 @@ app.get('/chat-limit', chatRateLimit, (req, res) => {
   res.json({
     ok: true,
     used: info.limit ? info.limit - info.remaining : 0,
-    remaining: info.remaining ?? 10,
-    total: info.limit ?? 10,
+    remaining: info.remaining ?? 20,
+    total: info.limit ?? 20,
     resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
     resetTimestamp: info.resetTime ?? null,
   });
@@ -286,8 +286,8 @@ app.post('/chat', chatRateLimit, async (req, res) => {
         answer: "I couldn’t find anything in your data to answer that.",
         chatLimit: {
           used: info.limit ? info.limit - info.remaining : 0,
-          remaining: info.remaining ?? 10,
-          total: info.limit ?? 10,
+          remaining: info.remaining ?? 20,
+          total: info.limit ?? 20,
           resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
         }
       });
@@ -325,8 +325,8 @@ app.post('/chat', chatRateLimit, async (req, res) => {
       answer: response.content,
       chatLimit: {
         used: info.limit ? info.limit - info.remaining : 0,
-        remaining: info.remaining ?? 10,
-        total: info.limit ?? 10,
+        remaining: info.remaining ?? 20,
+        total: info.limit ?? 20,
         resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
       }
     });
