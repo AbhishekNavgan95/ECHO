@@ -30,6 +30,7 @@ router.post('/', chatRateLimit, async (req, res) => {
           remaining: info.remaining ?? 20,
           total: info.limit ?? 20,
           resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
+          resetTimestamp: info.resetTime ? new Date(info.resetTime).getTime() : null,
         }
       });
     }
@@ -81,6 +82,7 @@ router.post('/', chatRateLimit, async (req, res) => {
         remaining: info.remaining ?? 20,
         total: info.limit ?? 20,
         resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
+        resetTimestamp: info.resetTime ? new Date(info.resetTime).getTime() : null,
       }
     })}\n\n`);
 
@@ -111,6 +113,7 @@ router.post('/', chatRateLimit, async (req, res) => {
           remaining: info.remaining ?? 20,
           total: info.limit ?? 20,
           resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
+          resetTimestamp: info.resetTime ? new Date(info.resetTime).getTime() : null,
         }
       })}\n\n`);
 

@@ -1,15 +1,12 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
-// General limiter: 20 requests / 24 hours per IP for chat
+// General limiter: 20 requests / 24 hours per IP
 const generalRateLimit = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => {
-    // Skip general rate limiting for chat-specific endpoints and health
-    return req.path === '/health' || req.path === '/chat-limit';
-  },
+  skip: (req) => req.path === '/health' || req.path === '/chat-limit',
   handler: (req, res) => {
     return res.status(429).json({
       ok: false,
@@ -21,18 +18,10 @@ const generalRateLimit = rateLimit({
 // Dedicated chat limiter: 20 chat requests / 24 hours per IP
 const chatRateLimit = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
-  max: 20, // 20 chat requests per 24 hours
+  max: 20,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => {
-    // Use a different key prefix for chat limits to separate from general limits
-    const ip = req.ip ||
-      req.connection?.remoteAddress ||
-      req.socket?.remoteAddress ||
-      req.headers['x-forwarded-for']?.split(',')[0] ||
-      'unknown';
-    return `chat:${ip}`; // Prefix with 'chat:' to separate from general rate limits
-  },
+  keyGenerator: (req) => `chat:${ipKeyGenerator(req)}`, // ✅ safe for IPv6
   skip: (req) => req.path === '/health' || req.ip === '::ffff:127.0.0.1',
   handler: (req, res) => {
     console.log(`Chat rate limit exceeded for IP: ${req.ip}`);

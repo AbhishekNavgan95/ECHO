@@ -22,13 +22,13 @@ const ChatSection = ({
 
   const getRateLimitColor = () => {
     if (rateLimitStatus === 'exceeded') return 'text-red-500 dark:text-red-400';
-    if (chatLimit.remaining <= 5) return 'text-yellow-500 dark:text-yellow-400';
+    if (rateLimitStatus === 'warning') return 'text-yellow-500 dark:text-yellow-400';
     return 'text-green-500 dark:text-green-400';
   };
 
   const getRateLimitBgColor = () => {
     if (rateLimitStatus === 'exceeded') return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
-    if (chatLimit.remaining <= 5) return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
+    if (rateLimitStatus === 'warning') return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
     return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
   };
 
@@ -51,7 +51,6 @@ const ChatSection = ({
           {/* Rate Limit Status */}
           <div className={`px-3 py-2 rounded-lg border text-sm font-medium ${getRateLimitBgColor()}`}>
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${getRateLimitColor().replace('text-', 'bg-')}`}></div>
               <span className={getRateLimitColor()}>
                 {chatLimit.remaining}/{chatLimit.total} chats left
               </span>
