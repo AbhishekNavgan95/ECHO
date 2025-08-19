@@ -26,9 +26,6 @@ const App = () => {
   const [filePreview, setFilePreview] = useState(null)
   const [uploadHistory, setUploadHistory] = useState(() => JSON.parse(localStorage.getItem('uploadHistory') || '[]'))
   const [showSmartSuggestion, setShowSmartSuggestion] = useState(false)
-  
-  // Refs
-  const messagesRef = useRef(null)
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -84,13 +81,6 @@ const App = () => {
 
     return () => clearInterval(timer)
   }, [chatLimit.resetTimestamp])
-
-  // auto-scroll to bottom on new messages
-  useEffect(() => {
-    const el = messagesRef.current
-    if (!el) return
-    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-  }, [messages])
 
   async function ingestAll(e) {
     e.preventDefault()
@@ -186,40 +176,6 @@ const App = () => {
       setIngesting(false)
       // allow the progress bar to finish visually
       setTimeout(() => setUploadProgress(0), 600)
-    }
-  }
-
-  // Drag-and-drop handlers
-  function handleDrag(e) {
-    e.preventDefault()
-    e.stopPropagation()
-  }
-
-  function handleDrop(e) {
-    e.preventDefault()
-    e.stopPropagation()
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFile(e.dataTransfer.files[0])
-    }
-  }
-
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0]
-    if (file) {
-      setFile(file)
-
-      // Create file preview
-      const fileType = file.name.split('.').pop().toLowerCase()
-      const fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB'
-
-      setFilePreview({
-        name: file.name,
-        size: fileSize,
-        type: fileType === 'pdf' ? 'pdf' :
-          fileType === 'docx' ? 'doc' :
-            fileType === 'txt' ? 'txt' :
-              fileType === 'csv' ? 'csv' : 'file'
-      })
     }
   }
 
