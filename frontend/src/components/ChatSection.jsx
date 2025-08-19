@@ -11,6 +11,11 @@ const ChatSection = ({
   timeUntilReset,
   askChat
 }) => {
+  const [speechState, setSpeechState] = useState({
+    isSpeaking: false,
+    currentMessageId: null,
+    utterance: null
+  });
   const messagesRef = useRef();
 
   // auto-scroll to bottom on new messages
@@ -86,11 +91,77 @@ const ChatSection = ({
                   </svg>
                 </div>
               )}
-              <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.role === 'user'
-                  ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700'
-                }`}>
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+              <div className={`max-w-[80%] rounded-2xl ${msg.role === 'user' ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700'}`}>
+                <div className="flex flex-col gap-y-4 justify-between items-start gap-2 p-3">
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap flex-1">{msg.content}</p>
+                  {msg.role === 'assistant' && msg.content !== '' && (
+                    <button 
+                      onClick={() => {
+                        if (speechState.isSpeaking && speechState.currentMessageId === i) {
+                          // Pause if currently speaking this message
+                          window.speechSynthesis.pause();
+                          setSpeechState(prev => ({ ...prev, isSpeaking: false }));
+                        } else if (speechState.currentMessageId === i) {
+                          // Resume if this message was paused
+                          window.speechSynthesis.resume();
+                          setSpeechState(prev => ({ ...prev, isSpeaking: true }));
+                        } else {
+                          // Start new speech
+                          window.speechSynthesis.cancel(); // Stop any current speech
+                          
+                          const utterance = new SpeechSynthesisUtterance(msg.content);
+                          utterance.rate = 1;
+                          utterance.pitch = 1;
+                          utterance.volume = 1;
+                          
+                          utterance.onend = () => {
+                            setSpeechState({
+                              isSpeaking: false,
+                              currentMessageId: null,
+                              utterance: null
+                            });
+                          };
+                          
+                          utterance.onpause = () => {
+                            setSpeechState(prev => ({ ...prev, isSpeaking: false }));
+                          };
+                          
+                          utterance.onresume = () => {
+                            setSpeechState(prev => ({ ...prev, isSpeaking: true }));
+                          };
+                          
+                          window.speechSynthesis.speak(utterance);
+                          setSpeechState({
+                            isSpeaking: true,
+                            currentMessageId: i,
+                            utterance
+                          });
+                        }
+                      }}
+                      className={`text-xs flex items-center gap-2 px-2 py-1 rounded-md transition-colors ${
+                        speechState.currentMessageId === i && speechState.isSpeaking
+                          ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 hover:bg-purple-200 dark:hover:bg-purple-800'
+                          : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-400 dark:hover:bg-gray-500 text-gray-950 dark:text-gray-950'
+                      }`}
+                      title={speechState.currentMessageId === i && speechState.isSpeaking ? 'Pause' : 'Read aloud'}
+                      aria-label={speechState.currentMessageId === i && speechState.isSpeaking ? 'Pause' : 'Read aloud'}
+                    >
+                      <span>{speechState.currentMessageId === i && speechState.isSpeaking ? 'Pause' : 'Read Aloud'}</span>
+                      <svg 
+                        className="w-4 h-4" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        {speechState.currentMessageId === i && speechState.isSpeaking ? (
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        ) : (
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-6-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        )}
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
               {msg.role === 'user' && (
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
