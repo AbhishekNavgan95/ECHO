@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import logo from '../assets/logo.png'
 
-const Header = ({ theme, setTheme }) => {
+const Header = ({ theme, setTheme, user, onSignIn, onLogout, googleBtnRef }) => {
+
   return (
     <header className="border-b border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-10">
       <div className="mx-auto max-w-7xl px-6 py-4">
@@ -17,27 +18,65 @@ const Header = ({ theme, setTheme }) => {
               <p className="text-sm text-gray-500 dark:text-gray-400">Intelligent Document Analysis & Chat</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <a href="https://github.com/AbhishekNavgan95/ECHO" target="_blank" rel="noopener noreferrer" className="group relative px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-github-icon lucide-github"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></svg>
-            </a>
-            <a
-              href='https://abhisheknavgan.xyz/'
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 flex items-center gap-2"
-            >
-              <span>Meet me here!</span>
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-              <span className="absolute -bottom-1 left-1/2 w-4/5 h-0.5 bg-white/30 rounded-full transform -translate-x-1/2 scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
-            </a>
+            <div className="flex items-center gap-3">
+              <a href="https://abhisheknavgan.xyz" target="_blank" rel="noopener noreferrer" className="hidden sm:flex mr-2 group relative px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 items-center gap-2">
+                Find me here
+              </a>
+            {!user && (
+              <div className="flex items-center gap-2">
+                <div ref={googleBtnRef}></div>
+              </div>
+            )}
+            {user && <UserMenu user={user} onLogout={onLogout} />}
           </div>
         </div>
       </div>
     </header>
   );
 };
+
+const UserMenu = ({ user, onLogout }) => {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onDocClick)
+    return () => document.removeEventListener('mousedown', onDocClick)
+  }, [])
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-2 px-2 py-1.5 rounded-md "
+      >
+        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
+          <img src={user?.avatarUrl || "https://ui-avatars.com/api/?name=Abhishek Navgan".replaceAll(" ", "%20")} alt={user?.email || 'User'} className="w-full h-full object-cover" />
+        </div>
+        <span className="hidden sm:inline text-sm text-gray-700 dark:text-gray-300 max-w-[160px] truncate">{user.name || user.email}</span>
+        <svg className={`w-4 h-4 text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.186l3.71-3.955a.75.75 0 111.08 1.04l-4.24 4.52a.75.75 0 01-1.08 0l-4.24-4.52a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
+      </button>
+      {open && (
+        <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg overflow-hidden z-20">
+          <div className="p-3 border-b border-gray-100 dark:border-gray-800">
+            <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{user.name || 'Account'}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+          </div>
+          <div className="py-1">
+            <button
+              onClick={() => { setOpen(false); onLogout(); }}
+              className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default Header;

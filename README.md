@@ -103,9 +103,18 @@ echo/
 
 Backend `.env` file should include:
 ```
-PINECONE_API_KEY=your_pinecone_api_key
+PORT=5000
 OPENAI_API_KEY=your_openai_api_key
-PORT=3001
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_INDEX=quickstart
+PINECONE_REGION=us-east-1
+EMBEDDING_MODEL=text-embedding-3-small
+
+# Auth & DB
+JWT_SECRET=change-me
+GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
+      =mongodb://127.0.0.1:27017/echo
+FRONTEND_ORIGIN=http://localhost:5173
 ```
 
 ## 📚 Understanding RAG (Retrieval-Augmented Generation)

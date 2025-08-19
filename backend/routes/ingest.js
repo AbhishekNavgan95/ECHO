@@ -4,15 +4,16 @@ import { v4 as uuid } from 'uuid';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { getVectorStore } from '../config/database.js';
 import { chunkDocuments, loadFile, loadUrl } from '../utils/documentLoaders.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
-// Ingest endpoint
-router.post('/', upload.single('file'), async (req, res) => {
+// Ingest endpoint (auth required)
+router.post('/', requireAuth, upload.single('file'), async (req, res) => {
   try {
     const datasetId = String(req.query.datasetId || 'default');
-    const namespace = datasetId;
+    const userNamespace = `u_${req.user.id}_${datasetId}`;
 
     const text = req.body?.text?.trim() || '';
     const url = req.body?.url?.trim() || '';
@@ -22,7 +23,7 @@ router.post('/', upload.single('file'), async (req, res) => {
       return res.status(400).json({ ok: false, error: 'Provide at least one of: text, url, file' });
     }
 
-    const store = await getVectorStore(namespace);
+    const store = await getVectorStore(userNamespace);
     let totalChunks = 0;
 
     if (text) {

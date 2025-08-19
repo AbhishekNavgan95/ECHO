@@ -8,7 +8,7 @@ import ChatSection from './components/ChatSection.jsx'
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
 
-const App = () => {
+const App = () => { 
   // UI State
   const [file, setFile] = useState(null)
   const [text, setText] = useState('')
@@ -44,6 +44,119 @@ const App = () => {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  // Auth state
+  const [user, setUser] = useState(null)
+  const googleBtnRef = useRef(null)
+  const googleInitializedRef = useRef(false)
+
+  useEffect(() => {
+    // fetch session
+    fetch(`${API_BASE}/auth/me`, { credentials: 'include' })
+      .then(r => r.json())
+      .then(d => { if (d?.ok && d.user) setUser(d.user) })
+      .catch(() => {})
+  }, [])
+
+  // Handle Google credential and exchange with backend
+  const handleGoogleCredentialResponse = async (response) => {
+    try {
+      const res = await fetch(`${API_BASE}/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ idToken: response.credential })
+      })
+      const data = await res.json()
+      if (data.ok) setUser(data.user)
+      else toast.error(data.error || 'Login failed')
+    } catch (e) {
+      toast.error('Login failed')
+    }
+  }
+
+  // Initialize Google Sign-In and render the button when available
+  const initializeGoogleAuth = () => {
+    if (user || googleInitializedRef.current) return
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+    if (!clientId || !window.google || !googleBtnRef.current) return
+    window.google.accounts.id.initialize({
+      client_id: clientId,
+      callback: handleGoogleCredentialResponse
+    })
+    window.google.accounts.id.renderButton(googleBtnRef.current, { theme: 'outline', size: 'large' })
+    googleInitializedRef.current = true
+  }
+
+  // Try to auto-initialize when script and ref are ready
+  useEffect(() => {
+    let cancelled = false
+    const tryInit = () => { if (!cancelled) initializeGoogleAuth() }
+    const i = setInterval(tryInit, 300)
+    tryInit()
+    return () => { cancelled = true; clearInterval(i) }
+  }, [user])
+
+  // Manual start for users if button didn't render yet
+  function startSignIn() {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+    if (!clientId) {
+      toast.error('Google Sign-In not configured. Set VITE_GOOGLE_CLIENT_ID in frontend env.')
+      return
+    }
+    if (!window.google) {
+      toast('Loading Google Sign-In…', { icon: '⏳' })
+      return
+    }
+    initializeGoogleAuth()
+    try { window.google.accounts.id.prompt() } catch {}
+  }
+
+  // Fetch chat limit from server and sync to UI/local storage
+  async function refreshChatLimitFromServer() {
+    try {
+      const res = await fetch(`${API_BASE}/chat-limit`, { credentials: 'include' })
+      if (!res.ok) return
+      const data = await res.json()
+      if (data?.ok) {
+        const updated = updateChatLimitFromAPI({
+          used: data.used,
+          remaining: data.remaining,
+          total: data.total,
+          resetTime: data.resetTime,
+          resetTimestamp: data.resetTimestamp,
+        })
+        setChatLimit(updated)
+        setRateLimitStatus(getRateLimitStatus(updated.remaining))
+      }
+    } catch {}
+  }
+
+  // On login/session restore, load current limit
+  useEffect(() => {
+    if (user) refreshChatLimitFromServer()
+  }, [user])
+
+  async function logout() {
+    await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' })
+    // Clear all user-related state
+    setUser(null)
+    setMessages([])
+    setQuestion('')
+    setUploadHistory([])
+    localStorage.setItem('uploadHistory', JSON.stringify([]))
+    setChatLimit({ used: 0, remaining: 20, total: 20, resetTime: null, resetTimestamp: null })
+    setRateLimitStatus('ok')
+    // Re-enable Google button rendering without full page refresh
+    try {
+      if (googleBtnRef.current) googleBtnRef.current.innerHTML = ''
+      googleInitializedRef.current = false
+      // Allow React to render the sign-in container, then initialize
+      setTimeout(() => {
+        initializeGoogleAuth()
+      }, 0)
+    } catch {}
+  }
+
   // Ping backend health on initial load
   useEffect(() => {
     let aborted = false
@@ -53,7 +166,7 @@ const App = () => {
       try {
         setHealthChecking(true)
         setHealthError(null)
-        const res = await fetch(`${API_BASE}/health`, { signal: controller.signal, cache: 'no-store' })
+        const res = await fetch(`${API_BASE}/health`, { signal: controller.signal, cache: 'no-store', credentials: 'include' })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const data = await res.json()
         if (aborted) return
@@ -125,6 +238,10 @@ const App = () => {
 
   async function ingestAll(e) {
     e.preventDefault()
+    if (!user) {
+      toast.error('Please sign in to add to your knowledge base')
+      return
+    }
     if (!text.trim() && !url.trim() && !file) {
       toast.error('Add at least one of: text, file, or URL')
       return
@@ -137,6 +254,7 @@ const App = () => {
       if (url.trim()) form.append('url', url.trim())
       if (file) form.append('file', file)
       const res = await axios.post(`${API_BASE}/ingest`, form, {
+        withCredentials: true,
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total)
@@ -313,6 +431,10 @@ const App = () => {
 
   async function askChat(e) {
     e.preventDefault()
+    if (!user) {
+      toast.error('Please sign in to chat')
+      return
+    }
     const q = question.trim()
     if (!q) return
 
@@ -330,11 +452,37 @@ const App = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ question: q }),
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const contentType = response.headers.get('content-type') || ''
+      // Fallback for non-SSE JSON responses (e.g., empty docs case)
+      if (!contentType.includes('text/event-stream')) {
+        const data = await response.json().catch(() => null)
+        if (data && data.ok) {
+          const answerText = data.answer || ''
+          setMessages((m) => {
+            const newMessages = [...m]
+            newMessages[assistantMessageIndex] = {
+              role: 'assistant',
+              content: answerText
+            }
+            return newMessages
+          })
+          if (data.chatLimit) {
+            const updatedLimit = updateChatLimitFromAPI(data.chatLimit)
+            setChatLimit(updatedLimit)
+            setRateLimitStatus(getRateLimitStatus(updatedLimit.remaining))
+          }
+          setChatLoading(false)
+          return
+        }
+        throw new Error(data?.error || 'Unexpected response from server')
       }
 
       const reader = response.body.getReader();
@@ -431,9 +579,17 @@ const App = () => {
         }}
       />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 transition-colors duration-300 text-gray-900 dark:text-gray-100">
-        <Header theme={theme} setTheme={setTheme} />
+        <Header 
+          theme={theme} 
+          setTheme={setTheme} 
+          user={user} 
+          onSignIn={startSignIn} 
+          onLogout={logout} 
+          googleBtnRef={googleBtnRef}
+        />
 
         <main className="mx-auto max-w-7xl px-6 py-8">
+          {/* Auth banner removed; controls moved to Header */}
           {healthChecking && (
             <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-center gap-2">
               <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
