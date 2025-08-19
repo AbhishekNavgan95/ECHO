@@ -264,7 +264,7 @@ app.get('/chat-limit', chatRateLimit, (req, res) => {
   });
 });
 
-// Chat endpoint with dedicated rate limiting
+// Chat endpoint with dedicated rate limiting and streaming support
 app.post('/chat', chatRateLimit, async (req, res) => {
   try {
     const { question } = req.body || {};
@@ -279,17 +279,20 @@ app.post('/chat', chatRateLimit, async (req, res) => {
     const topK = Number(req.query.k || 6);
     const docs = await store.similaritySearch(question, topK);
 
+    // Get chat-specific rate limit info
+    const info = req.rateLimit || {};
+    const chatLimitInfo = {
+      used: info.limit ? info.limit - info.remaining : 0,
+      remaining: info.remaining ?? 20,
+      total: info.limit ?? 20,
+      resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
+    };
+
     if (!docs || docs.length === 0) {
-      const info = req.rateLimit || {};
       return res.json({
         ok: true,
-        answer: "I couldn’t find anything in your data to answer that.",
-        chatLimit: {
-          used: info.limit ? info.limit - info.remaining : 0,
-          remaining: info.remaining ?? 20,
-          total: info.limit ?? 20,
-          resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
-        }
+        answer: "I couldn't find anything in your data to answer that.",
+        chatLimit: chatLimitInfo
       });
     }
 
@@ -312,28 +315,78 @@ app.post('/chat', chatRateLimit, async (req, res) => {
       - ${context}
     `;
 
-    const response = await chat.invoke([
-      { role: 'system', content: SYSTEM },
-      { role: 'user', content: question },
-    ]);
-
-    // Get chat-specific rate limit info
-    const info = req.rateLimit || {};
-
-    res.json({
-      ok: true,
-      answer: response.content,
-      chatLimit: {
-        used: info.limit ? info.limit - info.remaining : 0,
-        remaining: info.remaining ?? 20,
-        total: info.limit ?? 20,
-        resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
-      }
+    // Set up Server-Sent Events headers
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Cache-Control'
     });
+
+    // Send initial metadata
+    res.write(`data: ${JSON.stringify({ 
+      type: 'start', 
+      chatLimit: chatLimitInfo 
+    })}\n\n`);
+
+    try {
+      // Create streaming chat instance
+      const streamingChat = new ChatOpenAI({
+        apiKey: OPENAI_API_KEY,
+        model: 'gpt-4o-mini',
+        temperature: 0.2,
+        streaming: true,
+      });
+
+      const stream = await streamingChat.stream([
+        { role: 'system', content: SYSTEM },
+        { role: 'user', content: question },
+      ]);
+
+      let fullContent = '';
+      for await (const chunk of stream) {
+        const content = chunk.content || '';
+        if (content) {
+          fullContent += content;
+          res.write(`data: ${JSON.stringify({ 
+            type: 'chunk', 
+            content: content 
+          })}\n\n`);
+        }
+      }
+
+      // Send completion signal
+      res.write(`data: ${JSON.stringify({ 
+        type: 'end', 
+        fullContent: fullContent,
+        chatLimit: chatLimitInfo 
+      })}\n\n`);
+
+    } catch (streamError) {
+      console.error('Streaming error:', streamError);
+      res.write(`data: ${JSON.stringify({ 
+        type: 'error', 
+        error: streamError.message || 'Streaming failed' 
+      })}\n\n`);
+    }
+
+    res.end();
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ ok: false, error: err.message });
+    
+    // If headers haven't been sent yet, send JSON error
+    if (!res.headersSent) {
+      res.status(500).json({ ok: false, error: err.message });
+    } else {
+      // If streaming has started, send error through SSE
+      res.write(`data: ${JSON.stringify({ 
+        type: 'error', 
+        error: err.message 
+      })}\n\n`);
+      res.end();
+    }
   }
 });
 

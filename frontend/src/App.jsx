@@ -297,29 +297,104 @@ const App = () => {
     e.preventDefault()
     const q = question.trim()
     if (!q) return
+
     setMessages((m) => [...m, { role: 'user', content: q }])
     setQuestion('')
     setChatLoading(true)
-    try {
-      const res = await axios.post(`${API_BASE}/chat`, { question: q });
-      const data = res.data;
-      if (!data.ok) {
-        throw new Error(data.error || 'Chat request failed');
-      }
-      setMessages((m) => [...m, { role: 'assistant', content: data.answer }]);
 
-      // Update chat limit from response and sync to local storage
-      if (data.chatLimit) {
-        const updatedLimit = updateChatLimitFromAPI(data.chatLimit);
-        setChatLimit(updatedLimit);
-        setRateLimitStatus(getRateLimitStatus(updatedLimit.remaining));
+    // Add placeholder message for streaming response
+    const assistantMessageIndex = messages.length + 1; // +1 for user message we just added
+    setMessages((m) => [...m, { role: 'assistant', content: '' }])
+
+    try {
+      const response = await fetch(`${API_BASE}/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question: q }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let streamingContent = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              if (data.type === 'start') {
+                // Update chat limit from initial response
+                if (data.chatLimit) {
+                  const updatedLimit = updateChatLimitFromAPI(data.chatLimit);
+                  setChatLimit(updatedLimit);
+                  setRateLimitStatus(getRateLimitStatus(updatedLimit.remaining));
+                }
+              } else if (data.type === 'chunk') {
+                // Update streaming content
+                streamingContent += data.content;
+                setMessages((m) => {
+                  const newMessages = [...m];
+                  newMessages[assistantMessageIndex] = {
+                    role: 'assistant',
+                    content: streamingContent
+                  };
+                  return newMessages;
+                });
+              } else if (data.type === 'end') {
+                // Final update with complete content
+                setMessages((m) => {
+                  const newMessages = [...m];
+                  newMessages[assistantMessageIndex] = {
+                    role: 'assistant',
+                    content: data.fullContent || streamingContent
+                  };
+                  return newMessages;
+                });
+
+                // Update chat limit from final response
+                if (data.chatLimit) {
+                  const updatedLimit = updateChatLimitFromAPI(data.chatLimit);
+                  setChatLimit(updatedLimit);
+                  setRateLimitStatus(getRateLimitStatus(updatedLimit.remaining));
+                }
+              } else if (data.type === 'error') {
+                throw new Error(data.error || 'Streaming error occurred');
+              }
+            } catch (parseError) {
+              console.error('Error parsing SSE data:', parseError);
+            }
+          }
+        }
       }
     } catch (err) {
-      const errorMsg = err.response?.data?.error || err.message || 'An unknown error occurred';
-      setMessages((m) => [...m, { role: 'assistant', content: `Error: ${errorMsg}` }]);
+      const errorMsg = err.message || 'An unknown error occurred';
+      setMessages((m) => {
+        const newMessages = [...m];
+        newMessages[assistantMessageIndex] = {
+          role: 'assistant',
+          content: `Error: ${errorMsg}`
+        };
+        return newMessages;
+      });
 
-      // Handle rate limit exceeded
-      if (err.response?.data?.rateLimitExceeded) {
+      // Handle rate limit exceeded (check if it's a rate limit error)
+      if (errorMsg.includes('rate limit') || errorMsg.includes('429')) {
         const exhaustedLimit = updateChatLimitFromAPI({ remaining: 0 });
         setChatLimit(exhaustedLimit);
         setRateLimitStatus('exceeded');
@@ -667,7 +742,7 @@ const App = () => {
                         className="hidden"
                       />
                     </div>
-                          
+
                     {/* Upload Progress */}
                     {ingesting && (file || uploadProgress > 0) && (
                       <div className="mx-6 mb-6 space-y-2">
@@ -881,20 +956,6 @@ const App = () => {
                     </div>
                   </div>
                 ))}
-
-                {chatLoading && (
-                  <div className="flex justify-start">
-                    <div className="flex items-start gap-3 max-w-[85%]">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 animate-pulse"></div>
-                      <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-3 shadow-sm w-full">
-                        <div className="animate-pulse flex flex-col gap-2">
-                          <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
-                          <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
 
               <div className="p-6 border-t border-gray-100 dark:border-gray-800">
