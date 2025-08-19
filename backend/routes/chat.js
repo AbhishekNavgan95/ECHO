@@ -61,24 +61,67 @@ router.post('/', chatRateLimit, async (req, res) => {
        - Context: ${context}
     `;
 
-    const response = await chat.invoke([
-      { role: 'system', content: SYSTEM },
-      { role: 'user', content: question },
-    ]);
+    // Set up Server-Sent Events headers
+    res.writeHead(200, {
+      'Content-Type': 'text/plain',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Cache-Control'
+    });
 
     // Get chat-specific rate limit info
     const info = req.rateLimit || {};
-
-    res.json({
-      ok: true,
-      answer: response.content,
+    
+    // Send initial data with rate limit info
+    res.write(`data: ${JSON.stringify({
+      type: 'start',
       chatLimit: {
         used: info.limit ? info.limit - info.remaining : 0,
         remaining: info.remaining ?? 20,
         total: info.limit ?? 20,
         resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
       }
-    });
+    })}\n\n`);
+
+    try {
+      const stream = await chat.stream([
+        { role: 'system', content: SYSTEM },
+        { role: 'user', content: question },
+      ]);
+
+      let fullContent = '';
+      
+      for await (const chunk of stream) {
+        if (chunk.content) {
+          fullContent += chunk.content;
+          res.write(`data: ${JSON.stringify({
+            type: 'chunk',
+            content: chunk.content
+          })}\n\n`);
+        }
+      }
+
+      // Send final message with complete content
+      res.write(`data: ${JSON.stringify({
+        type: 'end',
+        fullContent: fullContent,
+        chatLimit: {
+          used: info.limit ? info.limit - info.remaining : 0,
+          remaining: info.remaining ?? 20,
+          total: info.limit ?? 20,
+          resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
+        }
+      })}\n\n`);
+
+    } catch (streamError) {
+      res.write(`data: ${JSON.stringify({
+        type: 'error',
+        error: streamError.message
+      })}\n\n`);
+    }
+
+    res.end();
 
   } catch (err) {
     console.error(err);

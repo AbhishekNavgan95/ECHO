@@ -108,6 +108,9 @@ const KnowledgeBase = ({
           <UploadHistory 
             uploadHistory={uploadHistory}
             setUploadHistory={setUploadHistory}
+            setText={setText}
+            setUrl={setUrl}
+            setActiveTab={setActiveTab}
           />
         )}
       </div>
