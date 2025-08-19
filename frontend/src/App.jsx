@@ -239,7 +239,21 @@ const App = () => {
   async function ingestAll(e) {
     e.preventDefault()
     if (!user) {
-      toast.error('Please sign in to add to your knowledge base')
+      toast.error('Please sign in to add to your knowledge base', {
+        duration: 5000,
+        style: {
+          background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+          color: 'white',
+          fontWeight: '500',
+          borderRadius: '12px',
+          padding: '16px 20px',
+          boxShadow: '0 10px 25px -5px rgba(239, 68, 68, 0.4), 0 10px 10px -5px rgba(239, 68, 68, 0.04)',
+        },
+        iconTheme: {
+          primary: 'white',
+          secondary: '#ef4444',
+        },
+      })
       return
     }
     if (!text.trim() && !url.trim() && !file) {
@@ -432,7 +446,21 @@ const App = () => {
   async function askChat(e) {
     e.preventDefault()
     if (!user) {
-      toast.error('Please sign in to chat')
+      toast.error('Please sign in to chat', {
+        duration: 5000,
+        style: {
+          background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+          color: 'white',
+          fontWeight: '500',
+          borderRadius: '12px',
+          padding: '16px 20px',
+          boxShadow: '0 10px 25px -5px rgba(239, 68, 68, 0.4), 0 10px 10px -5px rgba(239, 68, 68, 0.04)',
+        },
+        iconTheme: {
+          primary: 'white',
+          secondary: '#ef4444',
+        },
+      })
       return
     }
     const q = question.trim()

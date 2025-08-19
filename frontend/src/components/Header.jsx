@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import logo from '../assets/logo.png'
+import logo from '../assets/logo.png';
+import { ChevronsLeftRightEllipsis, TerminalSquare, TrendingUp, UserRound, X } from 'lucide-react';
 
 const Header = ({ theme, setTheme, user, onSignIn, onLogout, googleBtnRef }) => {
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   return (
     <header className="border-b border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-10">
@@ -18,14 +20,28 @@ const Header = ({ theme, setTheme, user, onSignIn, onLogout, googleBtnRef }) => 
               <p className="text-sm text-gray-500 dark:text-gray-400">Intelligent Document Analysis & Chat</p>
             </div>
           </div>
-            <div className="flex items-center gap-3">
-              <a href="https://abhisheknavgan.xyz" target="_blank" rel="noopener noreferrer" className="hidden sm:flex mr-2 group relative px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 items-center gap-2">
-                Find me here
-              </a>
+          <div className="flex items-center gap-3">
+            <a href="https://abhisheknavgan.xyz" target="_blank" rel="noopener noreferrer" className="text-sm flex items-center gap-2 text-gray-500 mr-4 underline dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+              <TerminalSquare />
+              Unlock a secret
+            </a>
             {!user && (
-              <div className="flex items-center gap-2">
-                <div ref={googleBtnRef}></div>
-              </div>
+              <>
+                <button
+                  onClick={() => setShowLoginModal(true)}
+                  className="px-4 py-2 flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg"
+                >
+                  <span className="hidden sm:inline">Get Started</span>
+                  <TrendingUp />
+                </button>
+
+                <LoginModal
+                  isOpen={showLoginModal}
+                  onClose={() => setShowLoginModal(false)}
+                  googleBtnRef={googleBtnRef}
+                  onSignIn={onSignIn}
+                />
+              </>
             )}
             {user && <UserMenu user={user} onLogout={onLogout} />}
           </div>
@@ -57,7 +73,7 @@ const UserMenu = ({ user, onLogout }) => {
           <img src={user?.avatarUrl || "https://ui-avatars.com/api/?name=Abhishek Navgan".replaceAll(" ", "%20")} alt={user?.email || 'User'} className="w-full h-full object-cover" />
         </div>
         <span className="hidden sm:inline text-sm text-gray-700 dark:text-gray-300 max-w-[160px] truncate">{user.name || user.email}</span>
-        <svg className={`w-4 h-4 text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.186l3.71-3.955a.75.75 0 111.08 1.04l-4.24 4.52a.75.75 0 01-1.08 0l-4.24-4.52a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
+        <svg className={`w-4 h-4 text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.186l3.71-3.955a.75.75 0 111.08 1.04l-4.24 4.52a.75.75 0 01-1.08 0l-4.24-4.52a.75.75 0 01.02-1.06z" clipRule="evenodd" /></svg>
       </button>
       {open && (
         <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg overflow-hidden z-20">
@@ -75,6 +91,99 @@ const UserMenu = ({ user, onLogout }) => {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+const LoginModal = ({ isOpen, onClose, googleBtnRef, onSignIn }) => {
+  const modalRef = useRef(null)
+  const [mounted, setMounted] = useState(false)
+
+
+  useEffect(() => {
+    if (!isOpen) return
+    setMounted(true)
+
+    const handleKeydown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onClose()
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+        if (!focusable.length) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleKeydown)
+
+    // focus the modal container for accessibility
+    const toFocus = modalRef.current?.querySelector('[data-autofocus]') || modalRef.current
+    toFocus && toFocus.focus()
+
+    return () => {
+      document.removeEventListener('keydown', handleKeydown)
+      setMounted(false)
+    }
+  }, [isOpen, onClose])
+
+
+
+  if (!isOpen) return null
+
+  return (
+    <div
+      className={`fixed h-screen inset-0 to-0 z-50 p-4 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-200 ${mounted ? 'opacity-100' : 'opacity-0'}`}
+      onClick={onClose}
+      aria-hidden="true"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="login-title"
+        className={`w-full max-w-md outline-none focus:outline-none bg-white dark:bg-gray-900 rounded-2xl shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-all duration-200 transform ${mounted ? 'opacity-100 translate-y-0 sm:scale-100' : 'opacity-0 translate-y-2 sm:scale-95'}`}
+        onClick={(e) => e.stopPropagation()}
+        tabIndex={-1}
+        ref={modalRef}
+      >
+        <div className="relative p-6">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            aria-label="Close"
+          >
+            <X className="h-6 w-6" />
+          </button>
+
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-blue-500/10 to-cyan-500/10 dark:from-indigo-400/10 dark:via-blue-400/10 dark:to-cyan-400/10 mb-4 ring-1 ring-inset ring-gray-200/50 dark:ring-white/10">
+              <img src={logo} alt="ECHO" className="h-8 w-8 object-contain" />
+            </div>
+            <h3 id="login-title" className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Sign in to ECHO</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Your AI workspace for documents and chat</p>
+
+            <div className="mt-6">
+              <div ref={googleBtnRef} className="flex justify-center" data-autofocus></div>
+            </div>
+
+            <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+              By continuing, you agree to our <span className="underline">Terms</span> and <span className="underline">Privacy Policy</span>.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
