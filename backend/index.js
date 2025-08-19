@@ -21,7 +21,35 @@ import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/
 const app = express();
 app.set('trust proxy', 1); // for accurate IPs behind proxy
 
-app.use(cors());
+// CORS configuration
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  "https://echo.abhisheknavgan.xyz"
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow non-browser requests (no origin) and allowed origins
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
+
+// Handle preflight
+app.options('*', cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
 app.use(express.json({ limit: '16mb' }));
 
 // -------------------- RATE LIMITERS --------------------

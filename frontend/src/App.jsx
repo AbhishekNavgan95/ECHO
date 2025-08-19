@@ -33,6 +33,11 @@ const App = () => {
   const fileInputRef = useRef()
   const messagesRef = useRef()
 
+  // Backend health check state
+  const [healthChecking, setHealthChecking] = useState(true)
+  const [serverHealthy, setServerHealthy] = useState(false)
+  const [healthError, setHealthError] = useState(null)
+
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -41,6 +46,32 @@ const App = () => {
     }
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  // Ping backend health on initial load
+  useEffect(() => {
+    let aborted = false
+    const controller = new AbortController()
+
+    async function ping() {
+      try {
+        setHealthChecking(true)
+        setHealthError(null)
+        const res = await fetch(`${API_BASE}/health`, { signal: controller.signal, cache: 'no-store' })
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const data = await res.json()
+        if (aborted) return
+        setServerHealthy(!!data.ok)
+      } catch (e) {
+        if (aborted) return
+        setHealthError(e.message || 'Failed to reach server')
+      } finally {
+        if (!aborted) setHealthChecking(false)
+      }
+    }
+
+    ping()
+    return () => { aborted = true; controller.abort() }
+  }, [])
 
   // Update countdown timer
   useEffect(() => {
@@ -451,6 +482,15 @@ const App = () => {
         </header>
 
         <main className="mx-auto max-w-7xl px-6 py-8">
+          {healthChecking && (
+            <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-center gap-2">
+              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+              <span>Backend server is booting up…</span>
+            </div>
+          )}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[calc(100vh-140px)]">
             {/* Left column: Data ingestion */}
             <section className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden flex flex-col">
