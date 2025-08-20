@@ -6,8 +6,8 @@ import { DocxLoader } from "@langchain/community/document_loaders/fs/docx";
 import { CSVLoader } from "@langchain/community/document_loaders/fs/csv";
 import { TextLoader } from "langchain/document_loaders/fs/text";
 import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
-import { PuppeteerWebBaseLoader } from "@langchain/community/document_loaders/web/puppeteer";
 import { executablePath } from 'puppeteer';
+import { PuppeteerWebBaseLoader } from "@langchain/community/document_loaders/web/puppeteer";
 
 async function chunkDocuments(documents, chunkSize = 1000, overlap = 150) {
   const splitter = new RecursiveCharacterTextSplitter({ chunkSize, chunkOverlap: overlap });
@@ -47,8 +47,9 @@ async function loadFile(filepath, originalname, mimetype) {
 async function loadUrl(url) {
   const loader = new PuppeteerWebBaseLoader(url, {
     launchOptions: {
-      headless: true, // full browser
-      executablePath: executablePath(),
+      headless: true,
+      // Use Render's system-installed Chromium
+      executablePath: '/usr/bin/chromium-browser',
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -56,13 +57,12 @@ async function loadUrl(url) {
         '--disable-gpu',
       ],
     },
-    gotoOptions: { waitUntil: "networkidle0" }, // waits for all requests
+    gotoOptions: { waitUntil: "networkidle0" },
     evaluate: async (page, browser) => {
-      const content = await page.content();
-      return content;
+      return await page.content();
     },
   });
-  
+
   const docs = await loader.load();
   docs.forEach(d => d.metadata = { ...(d.metadata || {}), url });
   return docs;
