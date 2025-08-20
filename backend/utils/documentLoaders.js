@@ -6,8 +6,7 @@ import { DocxLoader } from "@langchain/community/document_loaders/fs/docx";
 import { CSVLoader } from "@langchain/community/document_loaders/fs/csv";
 import { TextLoader } from "langchain/document_loaders/fs/text";
 import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
-import { executablePath } from 'puppeteer';
-import { PuppeteerWebBaseLoader } from "@langchain/community/document_loaders/web/puppeteer";
+import { chromium } from 'playwright'; // ✅ switched to playwright
 
 async function chunkDocuments(documents, chunkSize = 1000, overlap = 150) {
   const splitter = new RecursiveCharacterTextSplitter({ chunkSize, chunkOverlap: overlap });
@@ -45,27 +44,35 @@ async function loadFile(filepath, originalname, mimetype) {
 }
 
 async function loadUrl(url) {
-  const loader = new PuppeteerWebBaseLoader(url, {
-    launchOptions: {
-      headless: true,
-      // Use Render's system-installed Chromium
-      executablePath: '/usr/bin/chromium-browser',
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-      ],
-    },
-    gotoOptions: { waitUntil: "networkidle0" },
-    evaluate: async (page, browser) => {
-      return await page.content();
-    },
+  try {
+    // First try Cheerio (fast, no browser)
+    const cheerioLoader = new CheerioWebBaseLoader(url);
+    const cheerioDocs = await cheerioLoader.load();
+    if (cheerioDocs?.length) {
+      cheerioDocs.forEach(d => d.metadata = { ...(d.metadata || {}), url });
+      return cheerioDocs;
+    }
+  } catch (err) {
+    console.warn(`Cheerio failed for ${url}, falling back to Playwright...`, err.message);
+  }
+
+  // Fallback to Playwright (handles JS-heavy sites)
+  const browser = await chromium.launch({
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+    ],
   });
 
-  const docs = await loader.load();
-  docs.forEach(d => d.metadata = { ...(d.metadata || {}), url });
-  return docs;
+  const page = await browser.newPage();
+  await page.goto(url, { waitUntil: 'networkidle' });
+  const content = await page.content();
+  await browser.close();
+
+  return [{ pageContent: content, metadata: { url } }];
 }
 
 export { chunkDocuments, loadFile, loadUrl };
