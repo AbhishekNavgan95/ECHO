@@ -18,7 +18,7 @@
     "@langchain/textsplitters": "^0.1.0",
     "@pinecone-database/pinecone": "^6.1.2",
     "cheerio": "^1.1.0",
-    "cookie-parser": "^1.4.6",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "d3-dsv": "^2.0.0",
     "docx": "^8.4.0",

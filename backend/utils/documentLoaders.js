@@ -37,7 +37,9 @@ async function loadFile(filepath, originalname, mimetype) {
     });
     return docs;
   } finally {
-    fs.unlinkSync(filepath).catch(() => { });
+    try {
+      await fs.promises.unlink(filepath);
+    } catch (e) { /* ignore */ }
   }
 }
 
