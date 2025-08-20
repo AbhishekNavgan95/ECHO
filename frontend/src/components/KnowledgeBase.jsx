@@ -1,22 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import FileUpload from './FileUpload.jsx';
 import UploadHistory from './UploadHistory.jsx';
 
-const KnowledgeBase = ({ 
-  activeTab, 
-  setActiveTab, 
-  text, 
-  setText, 
-  url, 
-  setUrl, 
-  file, 
-  setFile, 
-  filePreview, 
-  setFilePreview, 
-  uploadHistory, 
-  setUploadHistory, 
-  ingesting, 
-  uploadProgress, 
+const KnowledgeBase = ({
+  activeTab,
+  setActiveTab,
+  text,
+  setText,
+  url,
+  setUrl,
+  file,
+  setFile,
+  filePreview,
+  setFilePreview,
+  uploadHistory,
+  setUploadHistory,
+  ingesting,
+  uploadProgress,
   ingestAll,
   showSmartSuggestion,
   setShowSmartSuggestion,
@@ -58,37 +58,49 @@ const KnowledgeBase = ({
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
-            <button
-              onClick={() => setActiveTab('upload')}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'upload'
-                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-            >
-              Upload
-            </button>
-            <button
-              onClick={() => setActiveTab('history')}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all relative ${activeTab === 'history'
-                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-            >
-              History
-              {uploadHistory.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 text-white text-xs rounded-full flex items-center justify-center">
-                  {uploadHistory.length}
-                </span>
-              )}
-            </button>
+          <div className="flex items-center gap-3">
+            <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+              <button
+                onClick={() => {
+                  setActiveTab('upload')
+                  setUrl("")
+                  setText("")
+                  setFilePreview(null)
+                }}
+                className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'upload'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+              >
+                Upload
+              </button>
+              <button
+                onClick={() => {
+                  setActiveTab('history')
+                  setUrl("")
+                  setText("")
+                  setFilePreview(null)
+                }}
+                className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all relative ${activeTab === 'history'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+              >
+                History
+                {uploadHistory.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 text-white text-xs rounded-full flex items-center justify-center">
+                    {uploadHistory.length}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      
+
       <div className="flex-1 p-6 overflow-y-auto">
         {activeTab === 'upload' ? (
-          <FileUpload 
+          <FileUpload
             text={text}
             setText={setText}
             url={url}
@@ -105,7 +117,7 @@ const KnowledgeBase = ({
             handleTextSplit={handleTextSplit}
           />
         ) : (
-          <UploadHistory 
+          <UploadHistory
             uploadHistory={uploadHistory}
             setUploadHistory={setUploadHistory}
             setText={setText}
