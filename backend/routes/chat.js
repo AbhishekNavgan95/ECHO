@@ -3,6 +3,7 @@ import { getVectorStore } from "../config/database.js";
 import { chat } from "../config/openai.js";
 import { chatRateLimit, getChatLimitSnapshot } from "../middleware/rateLimiter.js";
 import { requireAuth } from "../middleware/auth.js";
+import { ChatHistory } from "../models/ChatHistory.js";
 
 const router = express.Router();
 
@@ -76,24 +77,19 @@ router.post("/", requireAuth, chatRateLimit, async (req, res) => {
     console.log("context : ", context);
 
     const SYSTEM = `
-      You are a concise RAG assistant. 
-      Use only the provided context snippets to answer. If the answer is not in the context, say you don't know.
-      
-      Rule: 
-      - Never exceed the context data given below, don't use general information which you already have strictly stay in the limit of the context data given below.
-      - If the answer is not present in the context just reply with something like 'I do not have any idea about that topic, you can insert data in my knowledge base through the left side (knowledge base) panel'.
-      - Answer in Hindi (chill + respectful vibe) only if the user question is in Hindi. Otherwise answer in English.
-      - Always return the reference of data where you got the answer from. 
-        Example - 
-        query - which are best projects of abhishek navgan?
-        response - Abhishek Navgan's best projects include:
-                    1. **Devnest**: An AI-powered full-stack LMS developed using React.js, Node.js, and MongoDB, which increased student engagement by 45% and integrated features like chunked video streaming and a real-time code editor.
-                    2. **QuizByte**: An exam platform built with Next.js, TypeScript, and MongoDB, supporting over 1,000 users and featuring a cheating-prevented exam system with dynamic questions.
-                    These projects showcase his skills in full-stack development and user engagement enhancements.
-                    reference: the projects data is given in the projects section of the resume.
-
-       - Context: ${context}
-    `;
+    You are a concise RAG assistant.
+  
+    Rules:
+    - Use BOTH the provided context snippets (from knowledge base) AND the prior conversation history to answer the user.
+    - If the answer is not present in either the context snippets or history, say:
+      "I do not have any idea about that topic, you can insert data in my knowledge base through the left side (knowledge base) panel."
+    - If the question is in Hindi, answer in Hindi (respectful + chill vibe). Otherwise answer in English.
+    - Always return the reference of data where you got the answer from if it comes from context. If the answer comes from chat history, mention it's from the prior conversation.
+  
+    Context snippets:
+    ${context}`;
+  
+  
 
     // Set up Server-Sent Events headers (CORS handled globally)
     res.writeHead(200, {
@@ -112,9 +108,19 @@ router.post("/", requireAuth, chatRateLimit, async (req, res) => {
       })}\n\n`
     );
 
+    // Load prior history for this user + dataset (limit the window to keep token usage low)
+    const historyDoc = await ChatHistory.findOne({ user: req.user.id, datasetId });
+    const priorMessages = (historyDoc?.messages || []).slice(-20).map(m => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    console.log("priorMessages : ", priorMessages);
+
     try {
       const stream = await chat.stream([
         { role: "system", content: SYSTEM },
+        ...priorMessages,
         { role: "user", content: question },
       ]);
 
@@ -141,6 +147,17 @@ router.post("/", requireAuth, chatRateLimit, async (req, res) => {
           chatLimit: endSnapshot,
         })}\n\n`
       );
+
+      // Persist this turn to history
+      const toAppend = [
+        { role: 'user', content: question },
+        { role: 'assistant', content: fullContent },
+      ];
+      await ChatHistory.updateOne(
+        { user: req.user.id, datasetId },
+        { $push: { messages: { $each: toAppend } } },
+        { upsert: true }
+      );
     } catch (streamError) {
       res.write(
         `data: ${JSON.stringify({
@@ -153,6 +170,34 @@ router.post("/", requireAuth, chatRateLimit, async (req, res) => {
     res.end();
   } catch (err) {
     console.error(err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// Fetch recent chat history for the authenticated user (optionally per datasetId)
+router.get("/history", requireAuth, async (req, res) => {
+  try {
+    const datasetId = String(req.query.datasetId || "default");
+    const limit = Math.min(Number(req.query.limit || 50), 200);
+    const historyDoc = await ChatHistory.findOne({ user: req.user.id, datasetId });
+    const messages = (historyDoc?.messages || []).slice(-limit);
+    res.json({ ok: true, datasetId, messages });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// Clear chat history for the authenticated user (optionally per datasetId)
+router.delete("/history", requireAuth, async (req, res) => {
+  try {
+    const datasetId = String(req.query.datasetId || "default");
+    await ChatHistory.updateOne(
+      { user: req.user.id, datasetId },
+      { $set: { messages: [] } },
+      { upsert: true }
+    );
+    res.json({ ok: true, datasetId });
+  } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
 });
