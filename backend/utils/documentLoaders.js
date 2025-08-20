@@ -7,6 +7,7 @@ import { CSVLoader } from "@langchain/community/document_loaders/fs/csv";
 import { TextLoader } from "langchain/document_loaders/fs/text";
 import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
 import { PuppeteerWebBaseLoader } from "@langchain/community/document_loaders/web/puppeteer";
+import { executablePath } from 'puppeteer';
 
 async function chunkDocuments(documents, chunkSize = 1000, overlap = 150) {
   const splitter = new RecursiveCharacterTextSplitter({ chunkSize, chunkOverlap: overlap });
@@ -45,7 +46,16 @@ async function loadFile(filepath, originalname, mimetype) {
 
 async function loadUrl(url) {
   const loader = new PuppeteerWebBaseLoader(url, {
-    launchOptions: { headless: true }, // full browser
+    launchOptions: {
+      headless: true, // full browser
+      executablePath: executablePath(),
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+      ],
+    },
     gotoOptions: { waitUntil: "networkidle0" }, // waits for all requests
     evaluate: async (page, browser) => {
       const content = await page.content();
