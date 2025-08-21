@@ -413,9 +413,42 @@ router.post('/:sessionId/file', requireAuth, upload.single('file'), async (req, 
     const splitDocs = await textSplitter.splitDocuments(docsWithMetadata);
     await store.addDocuments(splitDocs);
 
+    // Clean up temporary file after processing
+    try {
+      await fs.unlink(filePath);
+      
+      // Try to remove the user's upload directory if it's empty
+      const uploadDir = path.join(process.cwd(), 'uploads', req.user.id.toString());
+      try {
+        await fs.rmdir(uploadDir);
+      } catch (rmdirError) {
+        // Directory not empty or doesn't exist, ignore
+      }
+    } catch (unlinkError) {
+      console.warn('Failed to delete temporary file:', unlinkError.message);
+    }
+
     res.json({ ok: true, session });
   } catch (error) {
     console.error('Error uploading file:', error);
+    
+    // Clean up temporary file on error as well
+    if (req.file?.path) {
+      try {
+        await fs.unlink(req.file.path);
+        
+        // Try to remove the user's upload directory if it's empty
+        const uploadDir = path.join(process.cwd(), 'uploads', req.user.id.toString());
+        try {
+          await fs.rmdir(uploadDir);
+        } catch (rmdirError) {
+          // Directory not empty or doesn't exist, ignore
+        }
+      } catch (unlinkError) {
+        console.warn('Failed to delete temporary file after error:', unlinkError.message);
+      }
+    }
+    
     res.status(500).json({ ok: false, error: error.message });
   }
 });

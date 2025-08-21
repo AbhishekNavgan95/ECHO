@@ -57,11 +57,28 @@ router.post('/', requireAuth, upload.single('file'), async (req, res) => {
         id: uuid(),
       })));
       totalChunks += fileChunks.length;
+      
+      // Clean up temporary file after processing
+      try {
+        await fs.unlink(file.path);
+      } catch (unlinkError) {
+        console.warn('Failed to delete temporary file:', unlinkError.message);
+      }
     }
 
     res.json({ ok: true, datasetId, chunks: totalChunks });
   } catch (err) {
     console.error(err);
+    
+    // Clean up temporary file on error as well
+    if (req.file?.path) {
+      try {
+        await fs.unlink(req.file.path);
+      } catch (unlinkError) {
+        console.warn('Failed to delete temporary file after error:', unlinkError.message);
+      }
+    }
+    
     res.status(500).json({ ok: false, error: err.message });
   }
 });

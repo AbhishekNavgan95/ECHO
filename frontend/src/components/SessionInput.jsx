@@ -269,7 +269,7 @@ const SessionInput = ({ currentSession, onInputAdded }) => {
               <input
                 type="file"
                 onChange={handleFileUpload}
-                accept=".pdf,.txt,.md"
+                accept=".pdf,.txt,.md, .docx"
                 className="hidden"
                 id="file-upload"
                 disabled={loading}
