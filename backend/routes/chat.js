@@ -43,10 +43,10 @@ router.post("/", requireAuth, chatRateLimit, async (req, res) => {
           type: "start",
           chatLimit: {
             used: info.limit ? info.limit - info.remaining : 0,
-            remaining: info.remaining ?? 20,
-            total: info.limit ?? 20,
-            resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
-            resetTimestamp: info.resetTime ? new Date(info.resetTime).getTime() : null,
+            remaining: info.remaining ?? 30,
+            total: info.limit ?? 30,
+            resetTime: null,
+            resetTimestamp: null,
           },
         })}\n\n`
       );
@@ -56,10 +56,10 @@ router.post("/", requireAuth, chatRateLimit, async (req, res) => {
           fullContent: "I couldn't find anything in your data to answer that.",
           chatLimit: {
             used: info.limit ? info.limit - info.remaining : 0,
-            remaining: info.remaining ?? 20,
-            total: info.limit ?? 20,
-            resetTime: info.resetTime ? new Date(info.resetTime).toISOString() : null,
-            resetTimestamp: info.resetTime ? new Date(info.resetTime).getTime() : null,
+            remaining: info.remaining ?? 30,
+            total: info.limit ?? 30,
+            resetTime: null,
+            resetTimestamp: null,
           },
         })}\n\n`
       );

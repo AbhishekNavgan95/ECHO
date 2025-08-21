@@ -6,6 +6,7 @@ const UserSchema = new mongoose.Schema({
   avatarUrl: { type: String },
   provider: { type: String, default: 'google' },
   providerId: { type: String },
+  chatCount: { type: Number, default: 0 },
 }, { timestamps: true });
 
 export const User = mongoose.models.User || mongoose.model('User', UserSchema);

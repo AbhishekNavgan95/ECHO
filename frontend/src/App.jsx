@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
 import toast, { Toaster } from 'react-hot-toast'
-import { getChatLimitFromStorage, updateChatLimitFromAPI, getRateLimitStatus } from './utils/chatLimitStorage'
+import { getChatLimitFromStorage, updateChatLimitFromAPI, getRateLimitStatus, clearChatLimitStorage } from './utils/chatLimitStorage'
+
 import Header from './components/Header.jsx'
 import KnowledgeBase from './components/KnowledgeBase.jsx'
 import ChatSection from './components/ChatSection.jsx'
@@ -144,7 +145,11 @@ const App = () => {
     setQuestion('')
     setUploadHistory([])
     localStorage.setItem('uploadHistory', JSON.stringify([]))
-    setChatLimit({ used: 0, remaining: 20, total: 20, resetTime: null, resetTimestamp: null })
+    // Clear chat limit storage and reset to defaults aligned with backend (30)
+    try { clearChatLimitStorage() } catch {}
+    const resetLimitOnLogout = { used: 0, remaining: 30, total: 30, resetTime: null, resetTimestamp: null }
+    setChatLimit(resetLimitOnLogout)
+    updateChatLimitFromAPI(resetLimitOnLogout)
     setRateLimitStatus('ok')
     // Re-enable Google button rendering without full page refresh
     try {
@@ -198,8 +203,8 @@ const App = () => {
         setTimeout(() => {
           const resetLimit = {
             used: 0,
-            remaining: 20,
-            total: 20,
+            remaining: 30,
+            total: 30,
             resetTime: null,
             resetTimestamp: null
           }

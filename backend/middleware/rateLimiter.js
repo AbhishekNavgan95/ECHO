@@ -1,86 +1,109 @@
-import rateLimit from 'express-rate-limit';
+import { User } from '../models/User.js';
 
-// In-memory per-user store that exposes a getter without consuming requests
-class InMemoryUserStore {
-  constructor(windowMs) {
-    this.windowMs = windowMs;
-    this.records = new Map();
-  }
+const CHAT_LIMIT = 30;
 
-  init(options = {}) {
-    if (options.windowMs) this.windowMs = options.windowMs;
-  }
-
-  _ensureRecord(key) {
-    const now = Date.now();
-    let rec = this.records.get(key);
-    if (!rec || rec.resetTimeMs <= now) {
-      rec = { totalHits: 0, resetTimeMs: now + this.windowMs };
-      this.records.set(key, rec);
+// Database-based chat limit middleware - permanent 30 chat limit per user
+const chatRateLimit = async (req, res, next) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({
+        ok: false,
+        error: 'Authentication required',
+      });
     }
-    return rec;
-  }
 
-  increment(key) {
-    const rec = this._ensureRecord(key);
-    rec.totalHits += 1;
-    return { totalHits: rec.totalHits, resetTime: new Date(rec.resetTimeMs) };
-  }
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(401).json({
+        ok: false,
+        error: 'User not found',
+      });
+    }
 
-  decrement(key) {
-    const rec = this._ensureRecord(key);
-    rec.totalHits = Math.max(0, rec.totalHits - 1);
-  }
+    // Check if user has exceeded permanent chat limit
+    if (user.chatCount >= CHAT_LIMIT) {
+      return res.status(429).json({
+        ok: false,
+        error: `Chat limit exceeded. You have used all ${CHAT_LIMIT} chats available for your account.`,
+        rateLimitExceeded: true,
+        chatLimit: {
+          used: user.chatCount,
+          remaining: 0,
+          total: CHAT_LIMIT,
+          resetTime: null,
+          resetTimestamp: null,
+        },
+      });
+    }
 
-  resetKey(key) {
-    this.records.delete(key);
-  }
-
-  get(key) {
-    const rec = this._ensureRecord(key);
-    return { totalHits: rec.totalHits, resetTime: new Date(rec.resetTimeMs) };
-  }
-}
-
-// Global limiter removed (policy: only per-user chat limit). Keep a no-op to avoid breaking imports if any remain.
-const generalRateLimit = (_req, _res, next) => next();
-
-const WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
-const chatStore = new InMemoryUserStore(WINDOW_MS);
-
-// Dedicated chat limiter: 20 chat requests / 24 hours per user (applied on /chat only)
-const chatRateLimit = rateLimit({
-  windowMs: WINDOW_MS,
-  max: 20,
-  standardHeaders: true,
-  legacyHeaders: false,
-  keyGenerator: (req) => {
-    const userId = req.user?.id;
-    return `chat:user:${userId || 'anonymous'}`;
-  },
-  store: chatStore,
-  handler: (req, res) => {
-    return res.status(429).json({
-      ok: false,
-      error: 'Daily chat limit exceeded (20 chats per 24 hours). Please try again tomorrow.',
-      rateLimitExceeded: true,
+    // Increment chat count
+    await User.findByIdAndUpdate(user._id, {
+      $inc: { chatCount: 1 }
     });
-  },
-});
 
-function getChatLimitSnapshot(userId) {
-  const key = `chat:user:${userId || 'anonymous'}`;
-  const info = chatStore.get(key);
-  const limit = 20;
-  const used = Math.min(info.totalHits, limit);
-  const remaining = Math.max(0, limit - used);
-  return {
-    used,
-    remaining,
-    total: limit,
-    resetTime: info.resetTime ? info.resetTime.toISOString() : null,
-    resetTimestamp: info.resetTime ? info.resetTime.getTime() : null,
-  };
+    // Add rate limit info to request for use in response
+    req.rateLimit = {
+      used: user.chatCount + 1,
+      remaining: CHAT_LIMIT - (user.chatCount + 1),
+      total: CHAT_LIMIT,
+      resetTime: null,
+      resetTimestamp: null,
+    };
+
+    next();
+  } catch (error) {
+    console.error('Chat rate limit error:', error);
+    return res.status(500).json({
+      ok: false,
+      error: 'Internal server error',
+    });
+  }
+};
+
+// Get current chat limit status for a user
+async function getChatLimitSnapshot(userId) {
+  try {
+    if (!userId) {
+      return {
+        used: 0,
+        remaining: CHAT_LIMIT,
+        total: CHAT_LIMIT,
+        resetTime: null,
+        resetTimestamp: null,
+      };
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return {
+        used: 0,
+        remaining: CHAT_LIMIT,
+        total: CHAT_LIMIT,
+        resetTime: null,
+        resetTimestamp: null,
+      };
+    }
+
+    return {
+      used: user.chatCount,
+      remaining: Math.max(0, CHAT_LIMIT - user.chatCount),
+      total: CHAT_LIMIT,
+      resetTime: null,
+      resetTimestamp: null,
+    };
+  } catch (error) {
+    console.error('Get chat limit snapshot error:', error);
+    return {
+      used: 0,
+      remaining: CHAT_LIMIT,
+      total: CHAT_LIMIT,
+      resetTime: null,
+      resetTimestamp: null,
+    };
+  }
 }
+
+// No-op general rate limit for backward compatibility
+const generalRateLimit = (_req, _res, next) => next();
 
 export { generalRateLimit, chatRateLimit, getChatLimitSnapshot };

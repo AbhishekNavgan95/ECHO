@@ -2,8 +2,8 @@
 const CHAT_LIMIT_KEY = 'echo_chat_limit';
 const DEFAULT_LIMIT = {
   used: 0,
-  remaining: 20,
-  total: 20,
+  remaining: 30,
+  total: 30,
   resetTime: null,
   resetTimestamp: null,
   lastUpdated: null
