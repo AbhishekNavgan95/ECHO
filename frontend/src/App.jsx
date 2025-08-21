@@ -26,6 +26,7 @@ const App = () => {
   const [sessionMessages, setSessionMessages] = useState([])
   const [showAddContextModal, setShowAddContextModal] = useState(false)
   const [sessionRefreshTrigger, setSessionRefreshTrigger] = useState(0)
+  const [sidebarWidth, setSidebarWidth] = useState(420)
 
   // Refs
   const messagesRef = useRef(null)
@@ -479,19 +480,51 @@ const App = () => {
 
         <main className="flex h-[calc(100vh-80px)]">
           {/* Session Sidebar */}
-          <SessionSidebar
-            user={user}
-            currentSession={currentSession}
-            onSessionSelect={handleSessionSelect}
-            onNewSession={handleNewSession}
-            onSessionUpdate={handleSessionUpdate}
-            onSessionDelete={handleSessionDelete}
-            onAddContext={() => setShowAddContextModal(true)}
-            refreshTrigger={sessionRefreshTrigger}
-          />
+          <div 
+            className="relative flex-shrink-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700"
+            style={{ width: `${sidebarWidth}px` }}
+          >
+            <SessionSidebar
+              user={user}
+              currentSession={currentSession}
+              onSessionSelect={handleSessionSelect}
+              onNewSession={handleNewSession}
+              onSessionUpdate={handleSessionUpdate}
+              onSessionDelete={handleSessionDelete}
+              onAddContext={() => setShowAddContextModal(true)}
+              refreshTrigger={sessionRefreshTrigger}
+            />
+            
+            {/* Resize Handle */}
+            <div 
+              className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-transparent hover:bg-blue-500 transition-colors group"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                const startX = e.clientX;
+                const startWidth = sidebarWidth;
+                
+                const handleMouseMove = (e) => {
+                  const newWidth = startWidth + (e.clientX - startX);
+                  const minWidth = 350;
+                  const maxWidth = 500;
+                  setSidebarWidth(Math.min(Math.max(newWidth, minWidth), maxWidth));
+                };
+                
+                const handleMouseUp = () => {
+                  document.removeEventListener('mousemove', handleMouseMove);
+                  document.removeEventListener('mouseup', handleMouseUp);
+                };
+                
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+              }}
+            >
+              <div className="absolute top-1/2 right-0 transform -translate-y-1/2 w-1 h-8 bg-gray-300 dark:bg-gray-600 group-hover:bg-blue-500 rounded-l transition-colors" />
+            </div>
+          </div>
 
-          {/* Main Content - Chat Section takes full width and height */}
-          <div className="flex-1 flex flex-col max-h-screen">
+          {/* Main Content - Chat Section takes remaining width and height */}
+          <div className="flex-1 flex flex-col max-h-screen" style={{ width: `calc(100vw - ${sidebarWidth}px - 48px)` }}>
             {healthChecking && (
               <div className="m-6 mb-0 p-3 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-center gap-2">
                 <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">

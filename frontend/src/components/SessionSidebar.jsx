@@ -167,25 +167,24 @@ const SessionSidebar = ({ user, currentSession, onSessionSelect, onNewSession, o
   }
 
   return (
-    <div className="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full">
+    <div className="w-full bg-white dark:bg-gray-800 flex flex-col h-full">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Sessions</h2>
-          <div className="flex gap-2">
-            <button
-              onClick={handleNewSession}
-              className="p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-              title="New Session"
-            >
-              <Plus className="h-5 w-5" />
-            </button>
-          </div>
+          <button
+            onClick={handleNewSession}
+            disabled={loading}
+            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors disabled:opacity-50"
+            title="New Session"
+          >
+            <Plus className="h-5 w-5" />
+          </button>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Create sessions to organize your conversations and context
-        </p>
       </div>
+      <p className="text-sm text-gray-600 dark:text-gray-400 p-4">
+        Create sessions to organize your conversations and context
+      </p>
 
       {/* Sessions List */}
       <div className="flex-1 overflow-y-auto">
