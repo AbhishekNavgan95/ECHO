@@ -1,0 +1,21 @@
+.session-sidebar-glass {
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(12px) saturate(120%);
+  box-shadow: 0 4px 32px 0 rgba(0,0,0,0.10), 0 1.5px 4px 0 rgba(0,0,0,0.06);
+  border-radius: 1.25rem;
+}
+.session-sidebar-session {
+  transition: box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.05);
+  border-radius: 1.25rem;
+}
+.session-sidebar-session:hover {
+  box-shadow: 0 8px 24px 0 rgba(60,120,255,0.10);
+  transform: scale(1.03);
+  border-color: #60a5fa;
+}
+.session-sidebar-active {
+  background: linear-gradient(90deg, #e0e7ff 0%, #f0f9ff 100%);
+  border-color: #2563eb;
+  box-shadow: 0 4px 24px 0 rgba(37,99,235,0.10);
+}

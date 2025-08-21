@@ -10,8 +10,10 @@ const Header = ({ theme, setTheme, user, onSignIn, onLogout, googleBtnRef, chatL
       <div className="mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
-              <img src={logo} alt="ECHO" />
+            <div className="mx-auto flex items-center justify-center h-12 w-12 p-2 rounded-xl bg-gradient-to-br from-blue-500/20 via-indigo-500/20 to-purple-500/20 dark:from-blue-400/20 dark:via-indigo-400/20 dark:to-purple-400/20 ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 shadow-lg">
+              <svg className="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -51,7 +53,7 @@ const Header = ({ theme, setTheme, user, onSignIn, onLogout, googleBtnRef, chatL
                   </button>
                   <div className="absolute top-full right-0 mt-2 w-64 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Paise lagte hai bhai unlimited nahi de sakta 🥲. 
+                      Paise lagte hai bhai unlimited nahi de sakta 🥲.
                       Open AI, Pinecone, Render wale mere Chacha k ladke nahi h 🙂
                     </p>
                   </div>
@@ -178,7 +180,7 @@ const LoginModal = ({ isOpen, onClose, googleBtnRef, onSignIn }) => {
 
   return (
     <div
-      className={`fixed h-screen inset-0 to-0 z-50 p-4 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-200 ${mounted ? 'opacity-100' : 'opacity-0'}`}
+      className={`fixed h-screen inset-0 to-0 z-50 p-4 flex items-center justify-center bg-black/50 backdrop-blur-lg transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}
       onClick={onClose}
       aria-hidden="true"
     >
@@ -186,33 +188,36 @@ const LoginModal = ({ isOpen, onClose, googleBtnRef, onSignIn }) => {
         role="dialog"
         aria-modal="true"
         aria-labelledby="login-title"
-        className={`w-full max-w-md outline-none focus:outline-none bg-white dark:bg-gray-900 rounded-2xl shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-all duration-200 transform ${mounted ? 'opacity-100 translate-y-0 sm:scale-100' : 'opacity-0 translate-y-2 sm:scale-95'}`}
+        className={`w-full max-w-md outline-none focus:outline-none bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-3xl shadow-2xl ring-1 ring-gray-200/50 dark:ring-gray-700/50 transition-all duration-300 transform ${mounted ? 'opacity-100 translate-y-0 sm:scale-100' : 'opacity-0 translate-y-4 sm:scale-95'}`}
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
         ref={modalRef}
       >
-        <div className="relative p-6">
+        <div className="relative p-8">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
             aria-label="Close"
           >
             <X className="h-6 w-6" />
           </button>
 
           <div className="text-center">
-            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-blue-500/10 to-cyan-500/10 dark:from-indigo-400/10 dark:via-blue-400/10 dark:to-cyan-400/10 mb-4 ring-1 ring-inset ring-gray-200/50 dark:ring-white/10">
-              <img src={logo} alt="ECHO" className="h-8 w-8 object-contain" />
+            <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-3xl bg-gradient-to-br from-blue-500/20 via-indigo-500/20 to-purple-500/20 dark:from-blue-400/20 dark:via-indigo-400/20 dark:to-purple-400/20 mb-6 ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 shadow-lg">
+              <svg className="w-10 h-10 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
             </div>
-            <h3 id="login-title" className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Sign in to ECHO</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300">Your AI workspace for documents and chat</p>
+            <h3 id="login-title" className="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">Welcome to ECHO</h3>
+            <p className="text-base text-gray-600 dark:text-gray-300 mb-2">Your intelligent AI workspace</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Analyze documents and chat with AI</p>
 
-            <div className="mt-6">
+            <div className="mt-8">
               <div ref={googleBtnRef} className="flex justify-center" data-autofocus></div>
             </div>
 
-            <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
-              By continuing, you agree to our <span className="underline">Terms</span> and <span className="underline">Privacy Policy</span>.
+            <p className="mt-6 text-xs text-gray-500 dark:text-gray-400">
+              By continuing, you agree to our <span className="underline hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors">Terms</span> and <span className="underline hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors">Privacy Policy</span>.
             </p>
           </div>
         </div>
