@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import logo from '../assets/logo.png';
-import { ChevronsLeftRightEllipsis, TerminalSquare, TrendingUp, UserRound, X } from 'lucide-react';
+import { ChevronsLeftRightEllipsis, TerminalSquare, TrendingUp, UserRound, X, HelpCircle } from 'lucide-react';
 
-const Header = ({ theme, setTheme, user, onSignIn, onLogout, googleBtnRef }) => {
+const Header = ({ theme, setTheme, user, onSignIn, onLogout, googleBtnRef, chatLimit, rateLimitStatus, timeUntilReset }) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   return (
     <header className="border-b border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-10">
-      <div className="mx-auto max-w-7xl px-6 py-4">
+      <div className="mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
@@ -20,11 +20,44 @@ const Header = ({ theme, setTheme, user, onSignIn, onLogout, googleBtnRef }) => 
               <p className="text-sm text-gray-500 dark:text-gray-400">Intelligent Document Analysis & Chat</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <a href="https://abhisheknavgan.xyz" target="_blank" rel="noopener noreferrer" className="text-sm flex items-center gap-2 text-gray-500 mr-4 underline dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+          <div className="flex items-center gap-6">
+            <a href="https://abhisheknavgan.xyz" target="_blank" rel="noopener noreferrer" className="text-sm flex items-center gap-2 text-gray-500 underline dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
               <TerminalSquare />
               Unlock a secret
             </a>
+            {/* Chat Limit Display */}
+            {user && chatLimit && (
+              <div className='space-x-2 flex items-center'>
+                <div className={`px-3 py-2 rounded-lg border text-sm font-medium ${rateLimitStatus === 'exceeded' ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' :
+                  rateLimitStatus === 'warning' ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' :
+                    'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                  }`}>
+                  <div className="flex items-center gap-2">
+                    <span className={rateLimitStatus === 'exceeded' ? 'text-red-500 dark:text-red-400' :
+                      rateLimitStatus === 'warning' ? 'text-yellow-500 dark:text-yellow-400' :
+                        'text-green-500 dark:text-green-400'}>
+                      {chatLimit.remaining}/{chatLimit.total} chats left
+                    </span>
+                  </div>
+                  {rateLimitStatus === 'exceeded' && timeUntilReset && (
+                    <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                      Resets in {timeUntilReset}
+                    </p>
+                  )}
+                </div>
+                <div className="relative group">
+                  <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <HelpCircle className="h-4 w-4" />
+                  </button>
+                  <div className="absolute top-full right-0 mt-2 w-64 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Paise lagte hai bhai unlimited nahi de sakta 🥲. 
+                      Open AI, Pinecone, Render wale mere Chacha k ladke nahi h 🙂
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
             {!user && (
               <>
                 <button

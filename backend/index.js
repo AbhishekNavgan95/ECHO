@@ -8,6 +8,7 @@ import chatRoutes from './routes/chat.js';
 import chatLimitRoutes from './routes/chatLimit.js';
 import healthRoutes from './routes/health.js';
 import authRoutes from './routes/auth.js';
+import sessionsRoutes from './routes/sessions.js';
 import { connectMongo } from './config/mongo.js';
 import { attachUserIfPresent } from './middleware/auth.js';
 
@@ -30,6 +31,7 @@ app.use(attachUserIfPresent, generalRateLimit);
 
 // -------------------- ROUTES --------------------
 app.use('/auth', authRoutes);
+app.use('/sessions', sessionsRoutes);
 app.use('/ingest', ingestRoutes);
 app.use('/chat', chatRoutes);
 app.use('/chat-limit', chatLimitRoutes);

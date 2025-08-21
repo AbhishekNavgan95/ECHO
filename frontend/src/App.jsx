@@ -4,18 +4,15 @@ import toast, { Toaster } from 'react-hot-toast'
 import { getChatLimitFromStorage, updateChatLimitFromAPI, getRateLimitStatus, clearChatLimitStorage } from './utils/chatLimitStorage'
 
 import Header from './components/Header.jsx'
-import KnowledgeBase from './components/KnowledgeBase.jsx'
+import SessionSidebar from './components/SessionSidebar.jsx'
+import SessionInput from './components/SessionInput.jsx'
 import ChatSection from './components/ChatSection.jsx'
+import Modal from './components/Modal.jsx'
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
 
-const App = () => { 
+const App = () => {
   // UI State
-  const [file, setFile] = useState(null)
-  const [text, setText] = useState('')
-  const [url, setUrl] = useState('')
-  const [ingesting, setIngesting] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
   const [messages, setMessages] = useState([])
   const [question, setQuestion] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
@@ -23,11 +20,13 @@ const App = () => {
   const [rateLimitStatus, setRateLimitStatus] = useState(() => getRateLimitStatus(getChatLimitFromStorage().remaining))
   const [timeUntilReset, setTimeUntilReset] = useState('')
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
-  const [activeTab, setActiveTab] = useState('upload')
-  const [filePreview, setFilePreview] = useState(null)
-  const [uploadHistory, setUploadHistory] = useState(() => JSON.parse(localStorage.getItem('uploadHistory') || '[]'))
-  const [showSmartSuggestion, setShowSmartSuggestion] = useState(false)
-  
+
+  // Session State
+  const [currentSession, setCurrentSession] = useState(null)
+  const [sessionMessages, setSessionMessages] = useState([])
+  const [showAddContextModal, setShowAddContextModal] = useState(false)
+  const [sessionRefreshTrigger, setSessionRefreshTrigger] = useState(0)
+
   // Refs
   const messagesRef = useRef(null)
 
@@ -55,7 +54,7 @@ const App = () => {
     fetch(`${API_BASE}/auth/me`, { credentials: 'include' })
       .then(r => r.json())
       .then(d => { if (d?.ok && d.user) setUser(d.user) })
-      .catch(() => {})
+      .catch(() => { })
   }, [])
 
   // Handle Google credential and exchange with backend
@@ -109,7 +108,7 @@ const App = () => {
       return
     }
     initializeGoogleAuth()
-    try { window.google.accounts.id.prompt() } catch {}
+    try { window.google.accounts.id.prompt() } catch { }
   }
 
   // Fetch chat limit from server and sync to UI/local storage
@@ -129,7 +128,7 @@ const App = () => {
         setChatLimit(updated)
         setRateLimitStatus(getRateLimitStatus(updated.remaining))
       }
-    } catch {}
+    } catch { }
   }
 
   // On login/session restore, load current limit
@@ -142,11 +141,11 @@ const App = () => {
     // Clear all user-related state
     setUser(null)
     setMessages([])
+    setSessionMessages([])
+    setCurrentSession(null)
     setQuestion('')
-    setUploadHistory([])
-    localStorage.setItem('uploadHistory', JSON.stringify([]))
     // Clear chat limit storage and reset to defaults aligned with backend (30)
-    try { clearChatLimitStorage() } catch {}
+    try { clearChatLimitStorage() } catch { }
     const resetLimitOnLogout = { used: 0, remaining: 30, total: 30, resetTime: null, resetTimestamp: null }
     setChatLimit(resetLimitOnLogout)
     updateChatLimitFromAPI(resetLimitOnLogout)
@@ -159,7 +158,7 @@ const App = () => {
       setTimeout(() => {
         initializeGoogleAuth()
       }, 0)
-    } catch {}
+    } catch { }
   }
 
   // Ping backend health on initial load
@@ -239,213 +238,49 @@ const App = () => {
     const el = messagesRef.current
     if (!el) return
     el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-  }, [messages])
+  }, [sessionMessages])
 
-  async function ingestAll(e) {
-    e.preventDefault()
-    if (!user) {
-      toast.error('Please sign in to add to your knowledge base', {
-        duration: 5000,
-        style: {
-          background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-          color: 'white',
-          fontWeight: '500',
-          borderRadius: '12px',
-          padding: '16px 20px',
-          boxShadow: '0 10px 25px -5px rgba(239, 68, 68, 0.4), 0 10px 10px -5px rgba(239, 68, 68, 0.04)',
-        },
-        iconTheme: {
-          primary: 'white',
-          secondary: '#ef4444',
-        },
-      })
-      return
-    }
-    if (!text.trim() && !url.trim() && !file) {
-      toast.error('Add at least one of: text, file, or URL')
-      return
-    }
-    setIngesting(true)
-    setUploadProgress(0)
-    try {
-      const form = new FormData()
-      if (text.trim()) form.append('text', text.trim())
-      if (url.trim()) form.append('url', url.trim())
-      if (file) form.append('file', file)
-      const res = await axios.post(`${API_BASE}/ingest`, form, {
-        withCredentials: true,
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            setUploadProgress(pct)
-          }
-        }
-      })
-      const data = res.data
-      if (!data.ok) throw new Error(data.error || 'Failed to ingest')
-
-      // Show custom success toast
-      toast.success(`Created ${data.chunks} chunks`, {
-        duration: 4000,
-        style: {
-          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-          color: 'white',
-          fontWeight: '500',
-          borderRadius: '12px',
-          padding: '16px 20px',
-          boxShadow: '0 10px 25px -5px rgba(16, 185, 129, 0.4), 0 10px 10px -5px rgba(16, 185, 129, 0.04)',
-        },
-        iconTheme: {
-          primary: 'white',
-          secondary: '#10b981',
-        },
-      })
-
-      // Add to upload history
-      const historyItem = {
-        timestamp: Date.now(),
-        name: '',
-        type: '',
-        content: ''
-      }
-
-      if (text.trim()) {
-        historyItem.name = text.trim().substring(0, 50) + (text.trim().length > 50 ? '...' : '')
-        historyItem.type = 'text'
-        historyItem.content = text.trim()
-      } else if (url.trim()) {
-        historyItem.name = url.trim()
-        historyItem.type = 'url'
-        historyItem.content = url.trim()
-      } else if (file) {
-        historyItem.name = file.name
-        historyItem.type = 'file'
-        historyItem.content = file.name
-      }
-
-      const newHistory = [historyItem, ...uploadHistory].slice(0, 10) // Keep only last 10 items
-      setUploadHistory(newHistory)
-      localStorage.setItem('uploadHistory', JSON.stringify(newHistory))
-
-      setText('')
-      setUrl('')
-      setFile(null)
-      setFilePreview(null)
-    } catch (err) {
-      const errorMsg = err.response?.data?.error || err.message || 'An unknown error occurred'
-
-      // Show custom error toast
-      toast.error(errorMsg, {
-        duration: 5000,
-        style: {
-          background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-          color: 'white',
-          fontWeight: '500',
-          borderRadius: '12px',
-          padding: '16px 20px',
-          boxShadow: '0 10px 25px -5px rgba(239, 68, 68, 0.4), 0 10px 10px -5px rgba(239, 68, 68, 0.04)',
-        },
-        iconTheme: {
-          primary: 'white',
-          secondary: '#ef4444',
-        },
-      })
-    } finally {
-      setIngesting(false)
-      // allow the progress bar to finish visually
-      setTimeout(() => setUploadProgress(0), 600)
+  // Session handlers
+  const handleSessionSelect = async (session) => {
+    setCurrentSession(session)
+    // Load session messages
+    if (session.messages) {
+      setSessionMessages(session.messages)
+    } else {
+      setSessionMessages([])
     }
   }
 
-  // Drag-and-drop handlers
-  function handleDrag(e) {
-    e.preventDefault()
-    e.stopPropagation()
+  const handleNewSession = (session) => {
+    setCurrentSession(session)
+    setSessionMessages([])
   }
 
-  function handleDrop(e) {
-    e.preventDefault()
-    e.stopPropagation()
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFile(e.dataTransfer.files[0])
-    }
+  const handleSessionUpdate = (updatedSession) => {
+    setCurrentSession(updatedSession)
   }
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0]
-    if (file) {
-      setFile(file)
-
-      // Create file preview
-      const fileType = file.name.split('.').pop().toLowerCase()
-      const fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB'
-
-      setFilePreview({
-        name: file.name,
-        size: fileSize,
-        type: fileType === 'pdf' ? 'pdf' :
-          fileType === 'docx' ? 'doc' :
-            fileType === 'txt' ? 'txt' :
-              fileType === 'csv' ? 'csv' : 'file'
-      })
+  const handleSessionDelete = (sessionId) => {
+    if (currentSession?.sessionId === sessionId) {
+      setCurrentSession(null)
+      setSessionMessages([])
     }
   }
 
-  // Smart text splitting function
-  const splitTextIntoSections = (text) => {
-    // Split by common section indicators
-    const sections = []
-
-    // First try to split by numbered headings (1., 2., etc.)
-    let parts = text.split(/(?=\d+\.\s+[A-Z])/g).filter(part => part.trim())
-
-    if (parts.length < 2) {
-      // Try splitting by bullet points or dashes
-      parts = text.split(/(?=[-•]\s+)/g).filter(part => part.trim())
-    }
-
-    if (parts.length < 2) {
-      // Try splitting by double line breaks (paragraphs)
-      parts = text.split(/\n\s*\n/).filter(part => part.trim())
-    }
-
-    if (parts.length < 2) {
-      // Try splitting by sentences if text is very long
-      const sentences = text.split(/[.!?]+\s+/).filter(s => s.trim())
-      if (sentences.length > 3) {
-        const chunkSize = Math.ceil(sentences.length / 3)
-        for (let i = 0; i < sentences.length; i += chunkSize) {
-          parts.push(sentences.slice(i, i + chunkSize).join('. ') + '.')
-        }
-      }
-    }
-
-    // Clean up and format sections
-    parts.forEach((part, index) => {
-      const cleanPart = part.trim()
-      if (cleanPart.length > 20) { // Only include substantial sections
-        sections.push({
-          title: `Section ${index + 1}`,
-          content: cleanPart,
-          preview: cleanPart.substring(0, 60) + (cleanPart.length > 60 ? '...' : '')
-        })
-      }
+  const handleInputAdded = (updatedSession) => {
+    setCurrentSession(updatedSession)
+    // Trigger session refresh to update counts in sidebar
+    setSessionRefreshTrigger(prev => prev + 1)
+    toast.success('Context added to session', {
+      duration: 3000,
+      style: {
+        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+        color: 'white',
+        fontWeight: '500',
+        borderRadius: '12px',
+        padding: '16px 20px',
+      },
     })
-
-    return sections.length > 1 ? sections : null
-  }
-
-  const handleTextSplit = () => {
-    const sections = splitTextIntoSections(text)
-    if (sections) {
-      // Format the split text with clear section headers
-      const formattedText = sections.map((section, index) =>
-        `=== ${section.title} ===\n${section.content}`
-      ).join('\n\n')
-
-      setText(formattedText)
-      setShowSmartSuggestion(false)
-    }
   }
 
   async function askChat(e) {
@@ -468,19 +303,34 @@ const App = () => {
       })
       return
     }
+
+    if (!currentSession) {
+      toast.error('Please select or create a session first', {
+        duration: 4000,
+        style: {
+          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+          color: 'white',
+          fontWeight: '500',
+          borderRadius: '12px',
+          padding: '16px 20px',
+        },
+      })
+      return
+    }
+
     const q = question.trim()
     if (!q) return
 
-    setMessages((m) => [...m, { role: 'user', content: q }])
+    setSessionMessages((m) => [...m, { sender: 'user', content: q }])
     setQuestion('')
     setChatLoading(true)
 
     // Add placeholder message for streaming response
-    const assistantMessageIndex = messages.length + 1; // +1 for user message we just added
-    setMessages((m) => [...m, { role: 'assistant', content: '' }])
+    const assistantMessageIndex = sessionMessages.length + 1; // +1 for user message we just added
+    setSessionMessages((m) => [...m, { sender: 'assistant', content: '' }])
 
     try {
-      const response = await fetch(`${API_BASE}/chat`, {
+      const response = await fetch(`${API_BASE}/sessions/${currentSession.sessionId}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -499,10 +349,10 @@ const App = () => {
         const data = await response.json().catch(() => null)
         if (data && data.ok) {
           const answerText = data.answer || ''
-          setMessages((m) => {
+          setSessionMessages((m) => {
             const newMessages = [...m]
             newMessages[assistantMessageIndex] = {
-              role: 'assistant',
+              sender: 'assistant',
               content: answerText
             }
             return newMessages
@@ -547,20 +397,20 @@ const App = () => {
               } else if (data.type === 'chunk') {
                 // Update streaming content
                 streamingContent += data.content;
-                setMessages((m) => {
+                setSessionMessages((m) => {
                   const newMessages = [...m];
                   newMessages[assistantMessageIndex] = {
-                    role: 'assistant',
+                    sender: 'assistant',
                     content: streamingContent
                   };
                   return newMessages;
                 });
               } else if (data.type === 'end') {
                 // Final update with complete content
-                setMessages((m) => {
+                setSessionMessages((m) => {
                   const newMessages = [...m];
                   newMessages[assistantMessageIndex] = {
-                    role: 'assistant',
+                    sender: 'assistant',
                     content: data.fullContent || streamingContent
                   };
                   return newMessages;
@@ -572,6 +422,9 @@ const App = () => {
                   setChatLimit(updatedLimit);
                   setRateLimitStatus(getRateLimitStatus(updatedLimit.remaining));
                 }
+
+                // Trigger session refresh to update message count in sidebar
+                setSessionRefreshTrigger(prev => prev + 1)
               } else if (data.type === 'error') {
                 throw new Error(data.error || 'Streaming error occurred');
               }
@@ -583,10 +436,10 @@ const App = () => {
       }
     } catch (err) {
       const errorMsg = err.message || 'An unknown error occurred';
-      setMessages((m) => {
+      setSessionMessages((m) => {
         const newMessages = [...m];
         newMessages[assistantMessageIndex] = {
-          role: 'assistant',
+          sender: 'assistant',
           content: `Error: ${errorMsg}`
         };
         return newMessages;
@@ -612,61 +465,76 @@ const App = () => {
         }}
       />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 transition-colors duration-300 text-gray-900 dark:text-gray-100">
-        <Header 
-          theme={theme} 
-          setTheme={setTheme} 
-          user={user} 
-          onSignIn={startSignIn} 
-          onLogout={logout} 
+        <Header
+          theme={theme}
+          setTheme={setTheme}
+          user={user}
+          chatLimit={chatLimit}
+          rateLimitStatus={rateLimitStatus}
+          timeUntilReset={timeUntilReset}
+          onSignIn={startSignIn}
+          onLogout={logout}
           googleBtnRef={googleBtnRef}
         />
 
-        <main className="mx-auto max-w-7xl px-6 py-8">
-          {/* Auth banner removed; controls moved to Header */}
-          {healthChecking && (
-            <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-center gap-2">
-              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-              </svg>
-              <span>Backend server is booting up…</span>
+        <main className="flex h-[calc(100vh-80px)]">
+          {/* Session Sidebar */}
+          <SessionSidebar
+            user={user}
+            currentSession={currentSession}
+            onSessionSelect={handleSessionSelect}
+            onNewSession={handleNewSession}
+            onSessionUpdate={handleSessionUpdate}
+            onSessionDelete={handleSessionDelete}
+            onAddContext={() => setShowAddContextModal(true)}
+            refreshTrigger={sessionRefreshTrigger}
+          />
+
+          {/* Main Content - Chat Section takes full width and height */}
+          <div className="flex-1 flex flex-col max-h-screen">
+            {healthChecking && (
+              <div className="m-6 mb-0 p-3 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-center gap-2">
+                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+                <span>Backend server is booting up…</span>
+              </div>
+            )}
+
+            {/* Chat Section */}
+            <div className="flex-1 p-6 max-h-screen overflow-hidden">
+              <ChatSection
+                messages={sessionMessages}
+                setMessages={setSessionMessages}
+                question={question}
+                setQuestion={setQuestion}
+                chatLoading={chatLoading}
+                chatLimit={chatLimit}
+                rateLimitStatus={rateLimitStatus}
+                timeUntilReset={timeUntilReset}
+                askChat={askChat}
+                currentSession={currentSession}
+                onAddContext={() => setShowAddContextModal(true)}
+              />
             </div>
-          )}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[calc(100vh-140px)]">
-            <KnowledgeBase 
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              text={text}
-              setText={setText}
-              url={url}
-              setUrl={setUrl}
-              file={file}
-              setFile={setFile}
-              filePreview={filePreview}
-              setFilePreview={setFilePreview}
-              uploadHistory={uploadHistory}
-              setUploadHistory={setUploadHistory}
-              ingesting={ingesting}
-              uploadProgress={uploadProgress}
-              ingestAll={ingestAll}
-              showSmartSuggestion={showSmartSuggestion}
-              setShowSmartSuggestion={setShowSmartSuggestion}
-              handleTextSplit={handleTextSplit}
-            />
-            
-            <ChatSection 
-              messages={messages}
-              setMessages={setMessages}
-              question={question}
-              setQuestion={setQuestion}
-              chatLoading={chatLoading}
-              chatLimit={chatLimit}
-              rateLimitStatus={rateLimitStatus}
-              timeUntilReset={timeUntilReset}
-              askChat={askChat}
-            />
           </div>
         </main>
+
+        {/* Add Context Modal */}
+        <Modal
+          isOpen={showAddContextModal}
+          onClose={() => setShowAddContextModal(false)}
+          title="Add Context to Session"
+        >
+          <SessionInput
+            currentSession={currentSession}
+            onInputAdded={(session) => {
+              handleInputAdded(session)
+              setShowAddContextModal(false)
+            }}
+          />
+        </Modal>
       </div>
     </div>
   )
